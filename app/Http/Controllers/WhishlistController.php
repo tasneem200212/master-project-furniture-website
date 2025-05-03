@@ -41,7 +41,7 @@ class WhishlistController extends Controller
     
                     return back()->with('success', 'Item added to wishlist!');
                 } else {
-                    return redirect('wishlist')->with('info', 'This item is already in your wishlist.');
+                    return back()->with('info', 'This item is already in your wishlist.');
                 }
             }
     

@@ -18,33 +18,105 @@ class ProductController extends Controller
     
     public function index(Request $request)
     {
-        $filter = $request->input('filter');
-        $query = Product::with(['category', 'productImages', 'reviews']);
+        $backgroundProducts = Product::with(['category', 'productImages', 'discount', 'reviews'])
+        ->whereIn('id', [5, 12, 18])
+        ->orderByRaw("FIELD(id, 5, 12, 18)")
+        ->get();
     
+        $positions = [
+            5 => ['x' => 30, 'y' => 40],
+            12 => ['x' => 60, 'y' => 20],
+            18 => ['x' => 45, 'y' => 70]
+        ];
     
-        $products = $query->get();
+        $highestDiscountProducts = Product::select('products.*')
+        ->with(['discount', 'productImages'])
+        ->join('discounts', 'products.discount_id', '=', 'discounts.id')
+        ->orderByRaw('(products.price * discounts.discount_percentage / 100) DESC')
+        ->take(2)
+        ->get();
     
-        $product = Product::latest()
-            ->with(['reviews', 'productImages', 'category'])
-            ->first();
-    
-        $reviews = Review::with('user')->get();
-    
-        $bestSellers = Product::with(['productImages', 'reviews'])
-            ->orderBy('sales_count', 'desc')
-            ->take(6)
+        $featuredProducts = Product::query()
+            ->with(['category', 'productImages', 'discount'])
+            ->whereHas('discount')
+            ->orWhereHas('reviews', function($q) {
+                $q->where('rating', 5);
+            })
+            ->inRandomOrder()
+            ->take(3)
             ->get();
     
-        $posts = Post::orderBy('published_at', 'desc')->take(2)->get();
+        $productsQuery = Product::query()
+            ->with(['category', 'productImages', 'reviews', 'discount']);
+        $this->applyFilters($productsQuery, $request);
     
-        $discountedProducts = Product::with(['discount', 'productImages'])
+        $data = [
+            'backgroundProducts' => $backgroundProducts,
+            'positions' => $positions,
+            'discountBannerProducts' => $highestDiscountProducts,
+            'featuredProducts' => $featuredProducts,
+            'products' => $productsQuery->get(),
+            'product' => Product::latest()->first(),
+            'reviews' => Review::with('user')->get(),
+            'bestSellers' => $this->getBestSellers(),
+            'posts' => Post::latest('published_at')->take(2)->get(),
+            'discountedProducts' => $this->getDiscountedProducts(),
+        ];
+    
+        return view('index', $data);
+    }
+    
+    protected function applyFilters($query, $request)
+    {
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+    
+        if ($request->filled('price')) {
+            $this->applyPriceFilter($query, $request->price);
+        }
+    
+        if ($request->filled('category') && $request->category == 'new') {
+            $query->where('created_at', '>=', now()->subDays(7));
+        }
+    
+        if ($request->filled('category') && $request->category == 'top') {
+            $query->orderByDesc('averageRating');
+        }
+    }
+    
+    protected function applyPriceFilter($query, $priceRange)
+    {
+        switch ($priceRange) {
+            case 'under50':
+                return $query->where('price', '<', 50);
+            case '50to100':
+                return $query->whereBetween('price', [50, 100]);
+            case '100to200':
+                return $query->whereBetween('price', [100, 200]);
+            case 'above200':
+                return $query->where('price', '>', 200);
+        }
+    }
+    
+    protected function getBestSellers()
+    {
+        return Product::query()
+            ->with(['productImages', 'reviews'])
+            ->orderByDesc('sales_count')
+            ->take(6)
+            ->get();
+    }
+    
+    protected function getDiscountedProducts()
+    {
+        return Product::query()
+            ->with(['discount', 'productImages'])
             ->whereNotNull('discount_id')
             ->take(2)
             ->get();
-            
-    
-        return view('index', compact('product', 'products', 'reviews', 'bestSellers', 'posts', 'discountedProducts'));
     }
+    
     
     
     
@@ -71,12 +143,12 @@ class ProductController extends Controller
 
     public function showProducts(Request $request)
     {
-        $products = Product::query()->with(['category', 'productImages', 'discount']);
-    
+        $products = Product::with(['category', 'productImages', 'discount']);
+
         if ($request->filled('category_id')) {
             $products->where('category_id', $request->category_id);
         }
-    
+
         if ($request->filled('price')) {
             switch ($request->price) {
                 case 'under50':
@@ -93,10 +165,21 @@ class ProductController extends Controller
                     break;
             }
         }
-    
+
+        // فلاتر حسب التاريخ باستخدام Carbon (منتجات جديدة)
+        if ($request->filled('category') && $request->category == 'new') {
+            $today = Carbon::today();
+            $products->where('created_at', '>=', $today->subDays(7)); // المنتجات التي تم إضافتها في آخر 7 أيام
+        }
+
+        // فلاتر حسب التقييم (منتجات الأعلى تقييمًا)
+        if ($request->filled('category') && $request->category == 'top') {
+            $products->orderBy('averageRating', 'desc'); // المنتجات الأعلى تقييمًا
+        }
+
         $products = $products->paginate(8)->appends($request->query());
         $categories = \App\Models\Category::all();
-    
+
         return view('product', compact('products', 'categories'));
     }
     
