@@ -20,7 +20,7 @@ body{
         border: none;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         border-radius: 20px;
-        background-color: rgba(255, 255, 255, 0.9); /* إضافة لون خلفية خفيف لزيادة وضوح النموذج */
+        background-color: rgba(255, 255, 255, 0.9);
     }
 
     .register-header {
@@ -68,37 +68,61 @@ body{
                 <div class="form-group mb-3">
                     <label for="name" class="font-weight-bold">Full Name</label>
                     <input type="text" name="name" id="name" class="form-control" 
-                           value="{{ old('name') }}" required autofocus>
+                           value="{{ old('name') }}" required autofocus title="Name should contain only letters and spaces">
+
+                           @error('name')
+                           <div class="text-danger mt-1">{{ $message }}</div>
+                       @enderror
                 </div>
 
                 <div class="form-group mb-3">
                     <label for="email" class="font-weight-bold">Email Address</label>
                     <input type="email" name="email" id="email" class="form-control" 
                            value="{{ old('email') }}" required>
+
+                           @error('email')
+                           <div class="text-danger mt-1">{{ $message }}</div>
+                       @enderror
                 </div>
 
                 <div class="form-group mb-3">
                     <label for="phone" class="font-weight-bold">Phone Number</label>
-                    <input type="text" name="phone" id="phone" class="form-control" 
-                           value="{{ old('phone') }}" required>
+                    <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone') }}" placeholder="e.g. 0791234567" required  title="Please enter a valid 10-digit Jordanian phone number starting with 07">
+
+                           @error('phone')
+                           <div class="text-danger mt-1">{{ $message }}</div>
+                       @enderror
                 </div>
+                
 
                 <div class="form-group mb-3">
                     <label for="address" class="font-weight-bold">Address</label>
                     <input type="text" name="address" id="address" class="form-control" 
                            value="{{ old('address') }}" required>
+
+                           @error('address')
+                           <div class="text-danger mt-1">{{ $message }}</div>
+                       @enderror
                 </div>
 
                 <div class="form-group mb-3">
                     <label for="password" class="font-weight-bold">Password</label>
                     <input type="password" name="password" id="password" 
-                           class="form-control" required>
+                           class="form-control" required minlength="8">
+
+                           @error('password')
+                           <div class="text-danger mt-1">{{ $message }}</div>
+                       @enderror
                 </div>
 
                 <div class="form-group mb-4">
                     <label for="password_confirmation" class="font-weight-bold">Confirm Password</label>
                     <input type="password" name="password_confirmation" 
-                           id="password_confirmation" class="form-control" required>
+                           id="password_confirmation" class="form-control" required minlength="8">
+
+                           @error('password_confirmation')
+                           <div class="text-danger mt-1">{{ $message }}</div>
+                       @enderror
                 </div>
 
                 <div class="text-center mt-4">

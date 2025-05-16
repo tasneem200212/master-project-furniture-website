@@ -11,37 +11,31 @@
             @csrf
             @method('PUT')
 
-            <!-- Name Field -->
             <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" name="name" id="name" class="form-control" value="{{ $user->name }}" required>
             </div>
 
-            <!-- Email Field -->
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" name="email" id="email" class="form-control" value="{{ $user->email }}" required>
             </div>
 
-            <!-- Password Field (optional) -->
             <div class="form-group">
                 <label for="password">Password (Leave blank to keep the current password)</label>
                 <input type="password" name="password" id="password" class="form-control" placeholder="Enter new password if you want to change it">
             </div>
 
-            <!-- Phone Field -->
             <div class="form-group">
                 <label for="phone">Phone</label>
                 <input type="text" name="phone" id="phone" class="form-control" value="{{ $user->phone }}" required>
             </div>
 
-            <!-- Address Field -->
             <div class="form-group">
                 <label for="address">Address</label>
                 <input type="text" name="address" id="address" class="form-control" value="{{ $user->address }}" required>
             </div>
 
-            <!-- Role Field -->
             <div class="form-group">
                 <label for="role">Role</label>
                 <select class="form-control" name="role" id="role" required>
@@ -50,12 +44,11 @@
                 </select>
             </div>
 
-            <!-- Profile Image (optional) -->
             <div class="form-group">
                 <label for="profile_image">Profile Image (Optional)</label>
                 <input type="file" name="profile_image" id="profile_image" class="form-control">
             </div>
-            <!-- Display current profile image -->
+
 @if($user->profile_image)
 <div class="form-group">
     <label for="current_image">Current Profile Image</label>
@@ -64,8 +57,9 @@
 @endif
 
 
-            <!-- Submit Button -->
             <button type="submit" class="btn text-light" style="background-color: #b18b5e;">Update User</button>
+            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary ml-3">Cancel</a>
+
         </form>
     </div>
 </div>

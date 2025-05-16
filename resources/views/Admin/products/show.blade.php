@@ -8,30 +8,30 @@
     <div class="container">
         <h1 class="my-4" style="color: #9b7a52">Product Details</h1>
 
-        <!-- Card to display the product details -->
         <div class="card shadow-lg border-0 rounded-lg">
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <!-- Product Title and Description -->
                         <h5 class="card-title font-weight-bold" style="color: #b18b5e">{{ $product->name }}</h5>
                         <p class="card-text">{{ $product->description }}</p>
                         <p><strong>Price:</strong> JD{{ number_format($product->price, 2) }}</p>
                     </div>
                     <div class="col-md-6 text-center">
-                        <!-- Product Images -->
                         <h6>Product Images</h6>
-                        <div class="row">
+                        <div class="row justify-content-center">
                             @foreach($product->productImages as $image)
-                                <div class="col-md-4 mb-2">
-                                    <img src="{{ asset('storage/' . $image->image_path) }}" alt="Product Image" class="img-fluid rounded shadow-sm" style="max-width: 150px; height: auto;">
+                                <div class="col-md-4 mb-2 d-flex justify-content-center">
+                                    <img src="{{ asset('storage/' . $image->image_path) }}" 
+                                         alt="Product Image" 
+                                         class="img-fluid rounded shadow-sm" 
+                                         style="width: 150px; height: 150px; object-fit: cover;">
                                 </div>
                             @endforeach
                         </div>
                     </div>
+                    
                 </div>
 
-                <!-- Additional Product Details -->
                 <hr>
                 <div class="row">
                     <div class="col-md-6">
@@ -46,7 +46,6 @@
                     </div>
                 </div>
 
-                <!-- Model, Shipping, Care Instructions -->
                 <div class="row">
                     <div class="col-md-6">
                         <p><strong>Model:</strong> {{ $product->model }}</p>

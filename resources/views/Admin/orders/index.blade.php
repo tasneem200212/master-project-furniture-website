@@ -8,7 +8,6 @@
 <div class="container">
     <h1 style="color: #9b7a52">All Orders</h1>
 
-    <!-- نموذج البحث -->
     <form method="GET" action="{{ route('admin.orders.index') }}" class="mb-3">
         <div class="row">
             <div class="col-md-4">
@@ -18,8 +17,9 @@
                 <select name="status" class="form-control">
                     <option value="">Select Status</option>
                     <option value="pending" {{ request()->get('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="complete" {{ request()->get('status') == 'complete' ? 'selected' : '' }}>Complete</option>
-                    <option value="shipped" {{ request()->get('status') == 'shipped' ? 'selected' : '' }}>Shipped</option>
+                    <option value="completed" {{ request()->get('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="processing" {{ request()->get('status') == 'processing' ? 'selected' : '' }}>processing</option>
+                    <option value="canceled" {{ request()->get('status') == 'canceled' ? 'selected' : '' }}>canceled</option>
                 </select>
             </div>
             <div class="col-md-4">
@@ -28,7 +28,6 @@
         </div>
     </form>
 
-    <!-- جدول الطلبات -->
     <table class="table table-striped">
         <thead>
             <tr>
@@ -45,22 +44,9 @@
                 <tr>
                     <td>{{ $order->id }}</td>
                     <td>{{ $order->user->name }}</td>
-                    <td>JD{{ number_format($order->total_price, 2) }}</td> <!-- عرض إجمالي السعر -->
-                    <td>{{ $order->created_at->format('d M, Y') }}</td> <!-- عرض تاريخ الإنشاء -->
+                    <td>JD{{ number_format($order->total_price, 2) }}</td>
+                    <td>{{ $order->created_at->format('d M, Y') }}</td>
                     <td>
-                        {{-- <span class="badge 
-                            @if(strtolower(trim($order->status)) == 'complete')
-                                badge-complete
-                            @elseif(strtolower(trim($order->status)) == 'pending')
-                                badge-pending
-                            @elseif(strtolower(trim($order->status)) == 'shipped')
-                                badge-shipped
-                            @else
-                                badge-default
-                            @endif
-                        ">
-                            {{ ucfirst(trim($order->status)) }}
-                        </span> --}}
                         <p>{{ $order->status }}</p>
                     </td>
                     <td>
@@ -77,6 +63,9 @@
             @endforeach
         </tbody>
     </table>
+            <div class="d-flex justify-content-center">
+                {{ $orders->links('pagination::bootstrap-4') }}
+            </div>  
 </div>
 </div>
 
@@ -100,8 +89,15 @@
         background-color: grey;
         color: white;
     }
+    .pagination .page-item .page-link {
+    background-color: #9b7a52;
+    border-color:white;
+    color: white;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #7a5b3e;
+    border-color: #7a5b3e;
+}
 </style>
 @endsection
-
-
-

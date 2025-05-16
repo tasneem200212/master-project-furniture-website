@@ -162,22 +162,6 @@ Route::get('/store', function () {
     return view('store');
 })->name('store');
 
-Route::get('/portfolio', function () {
-    return view('portfolio');
-})->name('portfolio');
-
-Route::get('/portfolio-details', function () {
-    return view('portfolio-details');
-})->name('portfolio-details');
-
-Route::get('/blog', function () {
-    return view('blog');
-})->name('blog');
-
-Route::get('/blog-details', function () {
-    return view('blog-details');
-})->name('blog-details');
-
 
 Route::get('/contact', function () {
     return view('contact');

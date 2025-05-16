@@ -18,8 +18,10 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|regex:/^[A-Za-z\s]+$/',
             'email' => 'required|email|max:255|unique:users,email',
+            'phone' => 'required|string|regex:/^07[7-9]{1}[0-9]{7}$/',
+            'address' => 'required|string|max:500',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -30,6 +32,8 @@ class RegisterController extends Controller
         User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
             'password' => Hash::make($request->password),
         ]);
 

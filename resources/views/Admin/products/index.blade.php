@@ -4,7 +4,6 @@
 
 @section('content')
 
-<!-- Right Panel -->
 <div id="right-panel" class="right-panel">
     <div class="container">
         <h1 class="my-4" style="color: #9b7a52">All Products</h1>
@@ -17,10 +16,8 @@
         <!-- Search Form -->
         <form method="GET" action="{{ route('admin.products.index') }}" class="mb-3">
             <div class="input-group">
-                <!-- Search by Product Name -->
                 <input type="text" name="search" class="form-control" placeholder="Search products by name" value="{{ request()->get('search') }}">
 
-                <!-- Dropdown for Category Filter -->
                 <select name="category" class="form-control ml-2">
                     <option value="">Select Category</option>
                     @foreach($categories as $category)
@@ -36,7 +33,6 @@
             </div>
         </form>
 
-        <!-- Products Table -->
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -45,7 +41,7 @@
                     <th>Name</th>
                     <th>Category</th>
                     <th>Price</th>
-                    <th>Discount</th> <!-- Added Discount Column -->
+                    <th>Discount</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -55,9 +51,12 @@
                     <td>{{ $product->id }}</td>
                     <td>
                         @foreach($product->productImages as $image)
-                            <img src="{{ asset('storage/' . $image->image_path) }}" alt="Product Image" class="img-fluid" style="max-width: 80px; height: auto;">
+                            <img src="{{ asset('storage/' . $image->image_path) }}" 
+                                 alt="Product Image" 
+                                 class="img-fluid" 
+                                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; margin-right: 5px;">
                         @endforeach
-                    </td>
+                    </td>                    
                     <td>{{ $product->name }}</td>
                     <td>{{ $product->category->name }}</td>
                     <td>JD{{ number_format($product->price, 2) }}</td>

@@ -16,14 +16,14 @@ class OrderController extends Controller
         if ($request->has('search') && !empty($request->search)) {
             $query->whereHas('user', function($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%');
-            }) ->paginate(8);
+            });
         }
     
         if ($request->has('status') && !empty($request->status)) {
             $query->where('status', $request->status);
         }
     
-        $orders = $query->get();
+        $orders = $query->orderBy('created_at','desc')->paginate(8);
     
         return view('admin.orders.index', compact('orders'));
     }
@@ -32,11 +32,9 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        // جلب الطلب مع المنتجات المرتبطة باستخدام التصفح (pagination)
         $order = Order::with('products')->findOrFail($id);
     
-        // استخدام paginate بدلاً من get للحصول على المنتجات
-        $products = $order->products()->paginate(10);  // تحديد 10 كعدد المنتجات في كل صفحة
+        $products = $order->products()->paginate(10);
     
         return view('admin.orders.show', compact('order', 'products'));
     }
@@ -66,7 +64,6 @@ class OrderController extends Controller
 
     public function updateStatus($id, $status)
     {
-        // تحديث حالة الطلب
         $order = Order::findOrFail($id);
         $order->status = $status;
         $order->save();

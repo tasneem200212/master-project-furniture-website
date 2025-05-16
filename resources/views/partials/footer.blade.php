@@ -40,7 +40,6 @@
                       <ul>
                          <li><a href="{{route('Pro.index')}}">Home</a></li>
                          <li><a href="{{route('about')}}">About us </a></li>
-                         <li><a href="{{route('blog')}}">Blog</a></li>
                          <li><a href="{{route('contact')}}">Contact us</a></li>
                       </ul>
                    </div>

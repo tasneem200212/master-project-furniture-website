@@ -11,7 +11,11 @@ class Order extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'status', 'total_price', 'payment_method_id', 'shipping_address_id'
+        'user_id',
+        'status',
+        'total_price',
+        'payment_method_id',
+        'shipping_address_id'
     ];
 
     protected $dates = ['deleted_at'];
@@ -24,12 +28,16 @@ class Order extends Model
     public function products()
     {
         return $this->belongsToMany(Product::class, 'order_details')
-                    ->withPivot('quantity', 'price');
+            ->withPivot('quantity', 'price');
     }
-    
+
 
     public function shippingAddress()
     {
         return $this->belongsTo(ShippingAddress::class);
+    }
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
 }

@@ -12,7 +12,7 @@
 
         <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
-            @method('PUT') <!-- لتحديد أن هذه العملية هي عملية تحديث -->
+            @method('PUT')
 
             <div class="form-group">
                 <label for="name">Product Name</label>
@@ -41,7 +41,6 @@
                 </select>
             </div>
 
-            <!-- New Fields for additional product details -->
             <div class="form-group">
                 <label for="weight">Product Weight (kg)</label>
                 <input type="number" class="form-control" id="weight" name="weight" value="{{ $product->weight }}" placeholder="Enter product weight">
@@ -87,7 +86,6 @@
                 <input type="number" class="form-control" id="discount_id" name="discount_id" value="{{ $product->discount_id }}" placeholder="Enter discount ID (optional)">
             </div>
 
-            <!-- Image Upload (optional, keeping current image if not updated) -->
             <div class="form-group">
                 <label for="images">Product Images</label>
                 <input type="file" name="images[]" id="images" class="form-control" multiple>
@@ -98,7 +96,7 @@
                         <div class="row">
                             @foreach($product->productImages as $image)
                                 <div class="col-md-3">
-                                    <img src="{{ asset('storage/' . $image->image_path) }}" class="img-fluid" style="max-width: 100px;">
+                                    <img src="{{ asset('storage/' . $image->image_path) }}" class="img-fluid" style="width: 150px; height: 150px; object-fit: cover;">
                                     <input type="checkbox" name="delete_images[]" value="{{ $image->id }}"> Delete
                                 </div>
                             @endforeach
@@ -110,6 +108,8 @@
 
             <div class="form-group">
                 <button type="submit" class="btn" style="background-color: #b18b5e; color: white;">Update Product</button>
+                <a href="{{ route('admin.products.index') }}" class="btn btn-secondary ml-3">Cancel</a>
+
             </div>
         </form>
     </div>

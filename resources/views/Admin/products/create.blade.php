@@ -99,6 +99,7 @@
 
         <div class="form-group">
             <button type="submit" class="btn my-3" style="background-color: #9b7a52; color: white;">Add Product</button>
+            <a href="{{ route('admin.products.index') }}" class="btn btn-secondary ml-3">Cancel</a>
         </div>
 
         <span id="image-error" style="color: red; display: none;">Please upload a valid image file (jpeg, png, jpg, gif) with size under 2MB.</span>

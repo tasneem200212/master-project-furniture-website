@@ -43,11 +43,16 @@
                                 <h5 class="fw-bold mb-3 text-secondary"><i class="fas fa-truck me-2"></i>Delivery Info</h5>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="text-muted">Shipping Address:</span>
-                                    <span class="fw-bold text-end">123 Main St, Amman, Jordan</span>
+                                    <span class="fw-bold text-end">
+                                        {{ optional($order->shippingAddress)->address ?? 'Address not available' }}
+                                    </span>
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <span class="text-muted">Payment Method:</span>
-                                    <span class="fw-bold">Credit Card</span>
+                                    <span class="fw-bold">
+                                        {{ optional($order->paymentMethod)->method_name ?? 'Payment method not available' }}
+
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -95,13 +100,9 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="4" class="text-end fw-bold">Subtotal:</td>
-                                        <td class="text-end">JD{{ number_format($order->total_price, 2) }}</td>
-                                    </tr>
-                                    <tr>
                                         <td colspan="4" class="text-end fw-bold">Shipping:</td>
-                                        <td class="text-end">JD0.00</td>
-                                    </tr>
+                                        <td class="text-end">JD{{ number_format($shippingCost, 2) }}</td>
+                                    </tr>                                    
                                     <tr>
                                         <td colspan="4" class="text-end fw-bold">Total:</td>
                                         <td class="text-end fw-bold fs-5" style="color: #9b7a52;">JD{{ number_format($order->total_price, 2) }}</td>

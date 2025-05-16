@@ -26,11 +26,6 @@
             <label for="expiry_date">Expiry Date</label>
             <input type="date" class="form-control" id="expiry_date" name="expiry_date" value="{{ old('expiry_date', $cupon->expiry_date) }}" required>
         </div>
-
-        <div class="form-group">
-            <label for="times_used">Times Used</label>
-            <input type="number" class="form-control" id="times_used" name="times_used"  value="{{old('times_used',$cupon->times_used)}}" required>
-        </div>
         
         <div class="form-group">
             <label for="max_usage">Max Usage</label>
@@ -39,6 +34,8 @@
         
 
         <button type="submit" class="btn" style="background-color: #9b7a52; color: white;">Update Cupon</button>
+        <a href="{{ route('admin.cupon.index') }}" class="btn btn-secondary ml-3">Cancel</a>
+
     </form>
 </div>
 @endsection

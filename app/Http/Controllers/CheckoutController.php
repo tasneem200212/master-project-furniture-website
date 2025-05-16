@@ -46,7 +46,7 @@ class CheckoutController extends Controller
 
         $coupon = session('coupon');
         $discountAmount = 0;
-        
+
         if ($coupon && $coupon->expiry_date >= now()) {
             $discountAmount = ($totalAmount * $coupon->discount_percentage) / 100;
         }
@@ -66,25 +66,28 @@ class CheckoutController extends Controller
 
         $total = $subtotal - $discountAmount;
 
-        return view('checkout', compact('cart', 'order', 'orderDetails', 'totalAmount', 'totalAmountAfterDiscount', 'discountAmount', 'coupon', 'user', 'paymentMethods', 'total'));
+        $nameParts = explode(' ', $user->name, 2);
+        $firstName = $nameParts[0];
+        $lastName = $nameParts[1] ?? '';
+
+        return view('checkout', compact('cart', 'order', 'orderDetails', 'totalAmount', 'totalAmountAfterDiscount', 'discountAmount', 'coupon', 'user', 'paymentMethods', 'total', 'firstName', 'lastName'));
     }
 
     public function store(Request $request)
     {
         Log::info('Order store method entered for user: ' . Auth::id());
-    
-        // تحقق من وجود طلب معلق يحتوي على منتجات
+
         $existingOrder = Order::where('user_id', Auth::id())
-                        ->where('status', 'pending')
-                        ->whereHas('products')  // هذا يضمن الطلب فيه منتجات
-                        ->first();
-    
+            ->where('status', 'pending')
+            ->whereHas('products')
+            ->first();
+
         if ($existingOrder) {
             return redirect()->route('Pro.index')->with('error', 'You already have a pending order.');
         }
-    
+
         DB::beginTransaction();
-    
+
         try {
             $validated = $request->validate([
                 'payment_method_id' => 'required|integer|exists:payment_methods,id',
@@ -94,47 +97,52 @@ class CheckoutController extends Controller
                 'address' => 'required|string|max:500',
                 'city' => 'required|string|max:255',
                 'state' => 'required|string|max:255',
-                'postcode' => 'required|string|max:20',
+                'postcode' => ['required', 'string', 'max:20', 'regex:/^[0-9]{5}(-[0-9]{4})?$/'],
                 'email' => 'required|email|max:255',
                 'phone' => 'required|string|max:20',
                 'total_amount' => 'required|numeric|min:0'
             ]);
-    
+
             $cartItems = Cart::with('product')
                 ->where('user_id', Auth::id())
                 ->get();
-    
+
             if ($cartItems->isEmpty()) {
                 throw new \Exception('The shopping cart is empty');
             }
-    
+
             $subtotal = round($cartItems->sum(fn($item) => $item->product->price * $item->quantity), 2);
             $coupon = session('coupon');
             $discountAmount = 0;
-    
+
             if ($coupon && $coupon->expiry_date >= now()) {
                 $discountAmount = round(($subtotal * (float)$coupon->discount_percentage) / 100, 2);
             }
-    
+
             if ($subtotal <= 0) {
                 throw new \Exception('Cannot create order with empty cart total.');
             }
-    
+
             $finalAmount = round($subtotal - $discountAmount, 2);
-    
+
+            $shippingCost = 7;
+
+            $finalAmountWithShipping = round($finalAmount + $shippingCost, 2);
+
+
             Log::info('Order Calculation Debug', [
                 'subtotal' => $subtotal,
                 'discount' => $discountAmount,
                 'finalAmount' => $finalAmount,
                 'totalAmountFromRequest' => $validated['total_amount']
             ]);
-    
+
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'payment_method_id' => $validated['payment_method_id'],
                 'shipping_address_id' => $validated['shipping_address_id'],
                 'status' => 'pending',
-                'total_price' => $finalAmount,
+                'total_price' => $finalAmountWithShipping,
                 'billing_info' => json_encode([
                     'first_name' => $validated['first_name'],
                     'last_name' => $validated['last_name'],
@@ -146,7 +154,7 @@ class CheckoutController extends Controller
                     'phone' => $validated['phone']
                 ])
             ]);
-    
+
             foreach ($cartItems as $item) {
                 $order->products()->attach($item->product_id, [
                     'quantity' => $item->quantity,
@@ -154,20 +162,27 @@ class CheckoutController extends Controller
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
+
+                $product = $item->product;
+                $product->sales_count += $item->quantity;
+                $product->save();
             }
-    
-            // حذف الطلبات المعلقة الفارغة القديمة (اختياري)
+
+            if ($validated['payment_method_id'] == 1) {
+                $this->validateCreditCard($request);
+            }
+
             Order::where('user_id', Auth::id())
                 ->where('status', 'pending')
                 ->whereDoesntHave('products')
                 ->delete();
-    
+
             Cart::where('user_id', Auth::id())->delete();
             session()->forget('coupon');
-    
+
             DB::commit();
             event(new OrderCreated($order));
-    
+
             return redirect()->route('Pro.index')
                 ->with('success', 'Your order has been successfully created! Thank you for choosing our store. We will prepare your order with special touches to give you the best experience.');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -181,20 +196,22 @@ class CheckoutController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             session()->forget('coupon');
-    
+
             return back()
                 ->with('error', 'Order creation failed: ' . $e->getMessage())
                 ->withInput();
         }
     }
-    
-    
-    private function isCouponValid($coupon)
+
+    private function validateCreditCard(Request $request)
     {
-        return $coupon &&
-            $coupon->expiry_date >= now() &&
-            $coupon->is_active;
+        $request->validate([
+            'card_number' => 'required|regex:/^\d{16}$/',
+            'expiry_date' => 'required|date_format:Y-m',
+            'cvv' => 'required|regex:/^\d{3}$/'
+        ]);
     }
+
 
     protected function processPayment($amount, $paymentMethodId)
     {

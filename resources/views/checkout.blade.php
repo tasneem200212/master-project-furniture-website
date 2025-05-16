@@ -50,67 +50,87 @@
                               <div class="col-md-6">
                                   <div class="checkout-form-list">
                                       <label>First Name <span class="required">*</span></label>
-                                      <input type="text" name="first_name" value="{{ $user->name }}" placeholder="">
+                                      <input type="text" name="first_name" value="{{ old('first_name', $firstName) }}" placeholder="">
+                                      @error('first_name')
+                                      <div class="text-danger mt-1">{{ $message }}</div>
+                                      @enderror
                                   </div>
                               </div>
 
                               <div class="col-md-6">
                                   <div class="checkout-form-list">
                                       <label>Last Name <span class="required">*</span></label>
-                                      <input type="text" name="last_name" value="{{ $user->name }}" placeholder="">
+                                      <input type="text" name="last_name" value="{{ old('last_name', $lastName)}}" placeholder="">
+                                      @error('last_name')
+                                      <div class="text-danger mt-1">{{ $message }}</div>
+                                     @enderror
                                   </div>
                               </div>
 
                               <div class="col-md-12">
                                   <div class="checkout-form-list">
                                       <label>Address <span class="required">*</span></label>
-                                      <input type="text" name="address" value="{{ $user->address }}" placeholder="Street address">
+                                      <input type="text" name="address" value="{{old('address', $user->address) }}" placeholder="Street address">
+                                      @error('address')
+                                      <div class="text-danger mt-1">{{ $message }}</div>
+                                      @enderror
                                   </div>
                               </div>
 
                               <div class="col-md-12">
                                   <div class="checkout-form-list">
-                                      <input type="text" name="address_line_2" placeholder="Apartment, suite, unit etc. (optional)">
+                                      <input type="text" name="address_line_2" value="{{old('address_line_2', $user->address_line_2) }}" placeholder="Apartment, suite, unit etc. (optional)">
                                   </div>
                               </div>
 
                               <div class="col-md-12">
                                   <div class="checkout-form-list">
                                       <label>Town / City <span class="required">*</span></label>
-                                      <input type="text" name="city" value="{{ $user->city }}" placeholder="Town / City">
+                                      <input type="text" name="city" value="{{ old('city', $user->city) }}" placeholder="Town / City">
                                   </div>
                               </div>
 
                               <div class="col-md-6">
                                   <div class="checkout-form-list">
                                       <label>State / County <span class="required">*</span></label>
-                                      <input type="text" name="state" value="{{ $user->state }}" placeholder="">
+                                      <input type="text" name="state" value="{{ old('state', $user->state) }}" placeholder="">
+                                      @error('state')
+                                      <div class="text-danger mt-1">{{ $message }}</div>
+                                      @enderror
                                   </div>
                               </div>
 
                               <div class="col-md-6">
                                   <div class="checkout-form-list">
                                       <label>Postcode / Zip <span class="required">*</span></label>
-                                      <input type="text" name="postcode" value="{{ $user->postcode }}" placeholder="Postcode / Zip">
+                                      <input type="text" name="postcode" maxlength="20" required pattern="[A-Za-z0-9\s\-]+" value="{{ old('postcode', $user->postcode) }}" placeholder="Postcode / Zip">
+                                      @error('postcode')
+                                      <div class="text-danger mt-1">{{ $message }}</div>
+                                      @enderror
                                   </div>
                               </div>
 
                               <div class="col-md-6">
                                   <div class="checkout-form-list">
                                       <label>Email Address <span class="required">*</span></label>
-                                      <input type="email" name="email" value="{{ $user->email }}" placeholder="">
+                                      <input type="email" name="email" value="{{ old('email', $user->email) }}" placeholder="">
+                                      @error('email')
+                                      <div class="text-danger mt-1">{{ $message }}</div>
+                                      @enderror
                                   </div>
                               </div>
 
                               <div class="col-md-6">
                                   <div class="checkout-form-list">
                                       <label>Phone <span class="required">*</span></label>
-                                      <input type="text" name="phone" value="{{ $user->phone }}" placeholder="Phone">
+                                      <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" placeholder="Phone">
+                                      @error('phone')
+                                      <div class="text-danger mt-1">{{ $message }}</div>
+                                      @enderror
                                   </div>
                               </div>
 
                               <div class="col-md-12">
-                                <!-- Payment Method Selection -->
                                 <div class="payment-method-selector mb-5">
                                     <div class="d-flex align-items-center mb-3">
                                         <i class="fas fa-wallet me-3 fs-2" style="color:#b18b5e"></i>
@@ -163,6 +183,9 @@
                                                        placeholder="•••• •••• •••• ••••"
                                                        maxlength="19"
                                                        oninput="formatCardNumber(this)">
+                                                       @error('card_number')
+                                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                                        @enderror
                                                 <span class="input-group-text bg-white border-start-0 card-type-icon">
                                                     <i class="fab fa-cc-visa" style="color:#b18b5e"></i>
                                                 </span>
@@ -197,6 +220,9 @@
                                                            placeholder="•••"
                                                            maxlength="3"
                                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                                           @error('cvv')
+                                                           <div class="text-danger mt-1">{{ $message }}</div>
+                                                           @enderror
                                                     <span class="input-group-text bg-white border-start-0" 
                                                           data-bs-toggle="tooltip" 
                                                           title="3-digit code on back of your card">
@@ -289,10 +315,8 @@
                                     }
                                 });
                                 
-                                // Trigger change event on page load
                                 paymentSelect.dispatchEvent(new Event('change'));
                                 
-                                // Card Number Formatting
                                 function formatCardNumber(input) {
                                     let value = input.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
                                     let formatted = '';
@@ -304,15 +328,12 @@
                                     
                                     input.value = formatted;
                                     
-                                    // Update card preview
                                     document.getElementById('card-preview-number').textContent = 
                                         formatted.length > 0 ? formatted : '•••• •••• •••• ••••';
                                     
-                                    // Detect card type and update icon
                                     const cardType = detectCardType(value);
                                     document.getElementById('card-type-text').textContent = cardType;
                                     
-                                    // Update card type icon
                                     const cardTypeIcon = document.querySelector('.card-type-icon i');
                                     cardTypeIcon.className = `fab fa-cc-${cardType.toLowerCase()}`;
                                 }
@@ -429,9 +450,7 @@
 
 @section('scripts')
 <script>
-    // Validate Payment Method Selection
     document.querySelector('form').addEventListener('submit', function(e) {
-        // 1. Check payment method is selected
         const paymentMethod = document.getElementById('payment_method').value;
         if (!paymentMethod) {
             e.preventDefault();
@@ -439,7 +458,6 @@
             return false;
         }
 
-        // 2. If credit card is selected, validate card details
         if (paymentMethod === 'credit-card-id-here') { // Replace with your actual credit card method ID
             const cardNumber = document.getElementById('card_number').value.replace(/\s+/g, '');
             const expiryDate = document.getElementById('expiry_date').value;
@@ -466,7 +484,6 @@
             }
         }
 
-        // 3. Check all required fields
         const requiredFields = this.querySelectorAll('[required]');
         let isValid = true;
         
@@ -485,7 +502,6 @@
             return false;
         }
 
-        // 4. If everything is valid, show loading state
         const submitBtn = document.getElementById('place-order-button');
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
         submitBtn.disabled = true;

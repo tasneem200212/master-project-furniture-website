@@ -146,13 +146,13 @@
                                 <div class="col-md-6">
                                     <label for="phone" class="form-label text-muted small">PHONE</label>
                                     <input id="phone" type="tel" class="form-control border-0 border-bottom rounded-0 py-2 px-0" 
-                                           name="phone" value="{{ old('phone', $user->phone) }}">
+                                           name="phone" value="{{ old('phone',isset($user) ? $user->phone : '') }}">
                                 </div>
 
                                 <div class="col-12">
                                     <label for="address" class="form-label text-muted small">ADDRESS</label>
                                     <textarea id="address" class="form-control border-0 border-bottom rounded-0 py-2 px-0" 
-                                              name="address" rows="2" style="resize: none; font-size: 1.5rem;">{{ old('address', $user->address) }}</textarea>
+                                              name="address" rows="2" style="resize: none; font-size: 1.5rem;">{{ old('address', isset($user) ? $user->address : '') }}</textarea>
                                 </div>
 
                                 <!-- Password Accordion -->

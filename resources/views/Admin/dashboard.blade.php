@@ -134,7 +134,7 @@
                                     <div class="stat-content">
                                         <div class="text-left dib">
                                             <div class="stat-text"><span class="count">{{ $ordersCount }}</span></div>
-                                            <div class="stat-heading">Sales</div>
+                                            <div class="stat-heading">Sales/orders</div>
                                         </div>
                                     </div>
                                 </div>

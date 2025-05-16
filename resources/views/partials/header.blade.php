@@ -55,7 +55,7 @@
                      @endauth
                  
                      @guest
-                     <button class="btn fw-bold" onclick="window.location.href='{{ route('login') }}'" style="color:white; font-size: 24px; font-weight: bold;">
+                     <button class="btn fw-bold" onclick="window.location.href='{{ route('login') }}'" style="color:white; font-size: 2rem !important; font-weight: bold;">
                          Login
                      </button>                    
                      @endguest

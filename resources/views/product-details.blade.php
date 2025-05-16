@@ -124,8 +124,22 @@
                         </a>
                      </div>
                      <div class="product__add-wish">
-                        <a href="#" class="product__add-wish-btn"><i class="fa-solid fa-heart"></i></a>
-                     </div>
+                        <form action="{{ route('wishlist.store') }}" method="POST" style="display: inline;">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <button type="submit" class="product__add-wish-btn">
+                                <i class="fa-solid fa-heart"></i>
+                                <span class="product-tooltip">Wishlist</span>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <style>
+                        .product__add-wish-btn i {
+                            font-size: 2rem;
+                        }
+                    </style>
+                                 
                   </div>
                </div>
             </div>
@@ -188,7 +202,7 @@
                         
                         <div class="tab-pane fade" id="nav-review" role="tabpanel" aria-labelledby="nav-review-tab">
                            <div class="product__details-review">
-                              <h3 class="comments-title">03 reviews for “Wide Cotton Tunic extreme hammer”</h3>
+                              <h3 class="comments-title">{{ $reviewCount }} reviews for “{{ $product->name }}”</h3>
                               <div class="latest-comments mb-50">
                                  <ul>
                                     @if($product->reviews->isEmpty())
@@ -230,42 +244,121 @@
                               </div>
                               
                               <!-- Review form -->
+                              @if(auth()->check())
                               <div class="product__details-comment section-space-medium-bottom">
-                                 <div class="comment-title mb-20">
-                                    <h3>Add a review</h3>
-                                    <p>Your email address will not be published. Required fields are marked *</p>
-                                 </div>
-                                 <div class="comment-input-box">
-                                    <form action="{{ route('reviews.store', $product->id) }}" method="POST">
-                                       @csrf
-                                       <div class="rating-stars mb-3">
-                                          <div class="star-rating">
-                                             @for ($i = 5; $i >= 1; $i--)
-                                                <input type="radio" name="rating" id="star{{ $i }}" value="{{ $i }}" required>
-                                                <label for="star{{ $i }}">★</label>
-                                             @endfor
+                                  <div class="comment-title mb-20">
+                                      <h3>Add a review</h3>
+                                      <p>Your email address will not be published. Required fields are marked *</p>
+                                  </div>
+                                  <div class="comment-input-box">
+                                      <form action="{{ route('reviews.store', $product->id) }}" method="POST">
+                                          @csrf
+                                          <div class="rating-stars mb-3">
+                                              <div class="star-rating">
+                                                  @for ($i = 1; $i <= 5; $i++)
+                                                      <input type="radio" name="rating" id="star{{ $i }}" value="{{ $i }}" required>
+                                                      <label for="star{{ $i }}" class="star-label">
+                                                          <i class="fas fa-star"></i>
+                                                      </label>
+                                                  @endfor
+                                              </div>
                                           </div>
-                                       </div>
-
-                                       <div class="col-xxl-12 mt-3">
-                                          <div class="comment-input">
-                                             <textarea name="review" placeholder="Your review" required></textarea>
+                          
+                                          <div class="col-xxl-12 mt-3">
+                                              <div class="comment-input">
+                                                  <textarea name="review" placeholder="Your review" required class="form-control"></textarea>
+                                              </div>
                                           </div>
-                                       </div>
-
-                                       <div class="col-xxl-12 mt-3">
-                                          <div class="comment-submit">
-                                             <button type="submit" class="fill-btn">
-                                                <span class="fill-btn-inner">
-                                                   <span class="fill-btn-normal">Submit Review</span>
-                                                   <span class="fill-btn-hover">Submit Review</span>
-                                                </span>
-                                             </button>
+                          
+                                          <div class="col-xxl-12 mt-3">
+                                              <div class="comment-submit">
+                                                  <button type="submit" class="fill-btn">
+                                                      <span class="fill-btn-inner">
+                                                          <span class="fill-btn-normal">Submit Review</span>
+                                                          <span class="fill-btn-hover">Submit Review</span>
+                                                      </span>
+                                                  </button>
+                                              </div>
                                           </div>
-                                       </div>
-                                    </form>
-                                 </div>
+                                      </form>
+                                  </div>
                               </div>
+                          @else
+                          <p class="alert alert-warning" style="font-size: 1.2rem; color: #b18b5e;">
+                           <i class="fas fa-sign-in-alt me-2"></i>
+                           You need to <a href="{{ route('login') }}" class="text-decoration-none" style="font-weight: bold;">login</a> to submit a review.
+                       </p>
+                                                 @endif
+                          
+                             
+                             <style>
+                                 .product__details-comment {
+                                     background-color: #f9f9f9;
+                                     padding: 20px;
+                                     border-radius: 8px;
+                                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                                 }
+                             
+                                 .comment-title h3 {
+                                     font-size: 1.8rem;
+                                     color: #9b7a52;
+                                 }
+                             
+                                 .rating-stars {
+                                     display: flex;
+                                     gap: 5px;
+                                     font-size: 2rem;
+                                 }
+                             
+                                 .star-rating input[type="radio"] {
+                                     display: none;
+                                 }
+                                 .star-rating{
+                                 direction: rtl;
+                                 }
+                             
+                                 .star-rating label {
+                                     cursor: pointer;
+                                     color: #ddd;
+                                     transition: color 0.2s ease;
+                                 }
+                             
+                                 .star-rating input[type="radio"]:checked ~ label {
+                                     color:#9b7a52;
+                                 }
+                             
+                                 .star-rating label i {
+                                     font-size: 2rem;
+                                 }
+                             
+                                 .comment-input textarea {
+                                     width: 100%;
+                                     padding: 10px;
+                                     font-size: 1rem;
+                                     border-radius: 5px;
+                                     border: 1px solid #ddd;
+                                     resize: vertical;
+                                     height: 150px;
+                                 }
+                             
+                                 .fill-btn {
+                                     background-color: #9b7a52;
+                                     color: white;
+                                     padding: 10px 20px;
+                                     border: none;
+                                     border-radius: 5px;
+                                     cursor: pointer;
+                                     font-size: 1rem;
+                                     transition: background-color 0.3s;
+                                 }
+                             
+                                 .fill-btn:hover {
+                                     background-color: #7a5d41;
+                                 }
+                             </style>
+                             
+                             
+                             
                            </div>
                         </div>
                      </div>

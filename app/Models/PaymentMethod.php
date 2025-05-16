@@ -15,5 +15,9 @@ class PaymentMethod extends Model
 
     protected $dates = ['deleted_at']; 
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'payment_method_id');
+    }
 
 }
