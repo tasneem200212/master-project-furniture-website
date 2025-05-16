@@ -32,6 +32,13 @@
             </button>
         </div>
     </div>
+
+    @if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
     
     <style>
         .welcome-message-container {
@@ -165,7 +172,7 @@
     <!-- Banner area end -->
 
     <!-- Service area start -->
-    <div class="text-center my-4"> 
+    {{-- <div class="text-center my-4"> 
       <h3 class="section-title">Shipping Methods</h3>
   </div>
   <section class="furniture-service pt-100 pb-100">
@@ -196,7 +203,86 @@
            @endforeach
        </div>
    </div>
+</section> --}}
+<div class="text-center my-5">
+    <h4 class="section-title">Why Choose Our Store?</h4>
+    <p class="text-muted">We offer you a unique and exceptional shopping experience</p>
+</div>
+
+<section class="features-section py-5 mb-50">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="icon mb-3">
+                        <i class="fas fa-shield-alt fa-3x" style="color: #b18b5e;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Guaranteed Quality</h5>
+                    <p class="text-muted">Our products undergo the highest quality standards and inspections</p>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="icon mb-3">
+                        <i class="fas fa-headset fa-3x" style="color: #b18b5e;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">24/7 Support</h5>
+                    <p class="text-muted">Our support team is available around the clock to assist you</p>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="icon mb-3">
+                        <i class="fas fa-tools fa-3x" style="color: #b18b5e;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Free Assembly</h5>
+                    <p class="text-muted">Professional installation included</p>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="icon mb-3">
+                        <i class="fas fa-gem fa-3x" style="color: #b18b5e;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Exclusive Offers</h5>
+                    <p class="text-muted">Special discounts and offers for our valued members</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
+
+<style>
+    .feature-card {
+        background: white;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        border: 1px solid #eee;
+    }
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .section-title {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+    .section-title:after {
+        content: '';
+        position: absolute;
+        width: 50px;
+        height: 2px;
+        background: #b18b5e;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+</style>
+
     <!-- Service area end -->
 
     <!-- Off area start -->
@@ -314,13 +400,6 @@
                                                     <span class="product-tooltip">Add to Cart</span>
                                                 </button>
                                             </form>
-                    
-                                            <button type="button" class="product-action-btn" data-bs-toggle="modal" data-bs-target="#producQuickViewModal" data-product-id="{{ $product->id }}" >
-                                       <svg width="26" height="18" viewBox="0 0 26 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M13.092 4.55026C10.5878 4.55026 8.55683 6.58125 8.55683 9.08541C8.55683 11.5896 10.5878 13.6206 13.092 13.6206C15.5961 13.6206 17.6271 11.5903 17.6271 9.08541C17.6271 6.5805 15.5969 4.55026 13.092 4.55026ZM13.092 12.1089C11.4246 12.1089 10.0338 10.7196 10.0338 9.05216C10.0338 7.38473 11.3898 6.02872 13.0572 6.02872C14.7246 6.02872 16.0807 7.38473 16.0807 9.05216C16.0807 10.7196 14.7594 12.1089 13.092 12.1089ZM25.0965 8.8768C25.0875 8.839 25.092 8.79819 25.0807 8.76115C25.0761 8.74528 25.0655 8.73621 25.0603 8.7226C25.0519 8.70144 25.0542 8.67574 25.0429 8.65533C22.8441 3.62131 18.1064 0.724854 13.0572 0.724854C8.00807 0.724854 3.17511 3.61677 0.975559 8.65079C0.966488 8.67196 0.968 8.69388 0.959686 8.71806C0.954395 8.73318 0.943812 8.74074 0.938521 8.7551C0.927184 8.7929 0.931719 8.83296 0.92416 8.8715C0.910555 8.93953 0.897705 9.00605 0.897705 9.07483C0.897705 9.14361 0.910555 9.20862 0.92416 9.2774C0.931719 9.31519 0.926428 9.35677 0.938521 9.39229C0.943057 9.40968 0.954395 9.41648 0.959686 9.4316C0.967244 9.45201 0.965732 9.4777 0.975559 9.49887C3.17511 14.5314 7.96121 17.381 13.0104 17.381C18.0595 17.381 22.8448 14.5374 25.0436 9.5034C25.055 9.48148 25.0527 9.45956 25.061 9.43538C25.0663 9.42253 25.0761 9.4127 25.0807 9.39758C25.092 9.36055 25.089 9.32049 25.0965 9.28118C25.1101 9.21315 25.1222 9.14739 25.1222 9.0771C25.1222 9.01058 25.1094 8.94482 25.0958 8.87604L25.0965 8.8768ZM13.0104 15.8692C8.72841 15.8692 4.51298 13.6123 2.44193 9.07407C4.49333 4.55177 8.76469 2.23582 13.0572 2.23582C17.349 2.23582 21.5251 4.55404 23.5773 9.07861C21.5266 13.6002 17.3036 15.8692 13.0104 15.8692Z" fill="white" />
-                                       </svg>
-                                       <span class="product-tooltip">Quick View</span>
-                                    </button>
                                             
                                             <form action="{{ route('wishlist.store') }}" method="POST" style="display: inline;">
                                                 @csrf
@@ -371,84 +450,6 @@
        </div>
     </section>
     <!-- Top sale area end -->
-
-<!-- Quick View Modal -->
-<div class="modal fade" id="producQuickViewModal" tabindex="-1" aria-labelledby="quickViewLabel" aria-hidden="true">
-   <div class="modal-dialog modal-lg modal-dialog-centered">
-     <div class="modal-content border-0 overflow-hidden">
-       <!-- Modal Header with Close Button -->
-       <div class="modal-header border-0 position-absolute end-0 top-0 z-3 pe-1 pt-1">
-         <button type="button" class="btn-close bg-light rounded-circle p-2 m-1" data-bs-dismiss="modal" aria-label="Close"></button>
-       </div>
-       
-       <div class="modal-body p-0 d-flex">
-         <!-- Product Image (Fixed aspect ratio) -->
-         <div class="col-md-6 p-0 bg-light">
-           <div class="ratio ratio-1x1 h-100">
-             <img src="{{ asset('storage/' . $product->productImages[0]->image_path) }}" 
-                  alt="{{ $product->name }}" 
-                  class="object-fit-contain p-3 w-100 h-100">
-           </div>
-         </div>
-         
-         <!-- Product Info -->
-         <div class="col-md-6 p-4 d-flex flex-column">
-           <!-- Category -->
-           <small class="text-uppercase text-muted mb-1">{{ $product->category->name }}</small>
-           
-           <!-- Product Name -->
-           <h3 class="mb-2 fw-bold">{{ $product->name }}</h3>
-           
-           <!-- Rating -->
-           <div class="d-flex align-items-center mb-2">
-             <div class="product__details-rating">
-               @for ($i = 1; $i <= 5; $i++)
-                 <i class="{{ $i <= $product->averageRating ? 'fas fa-star text-warning' : 'far fa-star text-muted' }} fs-6"></i>
-               @endfor
-             </div>
-             <small class="ms-2 text-muted">({{ $product->reviewCount }} reviews)</small>
-           </div>
-           
-           <!-- Price -->
-           <div class="d-flex align-items-center mb-3">
-             <h4 class="fw-bold text-dark mb-0 me-2">${{ number_format($product->price, 2) }}</h4>
-             @if($product->compare_price)
-               <del class="text-muted small">${{ number_format($product->compare_price, 2) }}</del>
-             @endif
-           </div>
-           
-           <!-- Description -->
-           <p class="text-secondary mb-4">{{ $product->description }}</p>
-           
-           <!-- Add to Cart -->
-           <form action="{{ route('cart.store') }}" method="POST" class="mt-auto">
-             @csrf
-             <input type="hidden" name="product_id" value="{{ $product->id }}">
-             <input type="hidden" name="quantity" value="1">
-             <button type="submit" class="btn btn-dark btn-lg w-100 py-2 fw-bold">
-               <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-             </button>
-           </form>
-           
-           <div class="d-flex justify-content-between mt-3 pt-3 border-top small">
-             <div class="text-center px-1">
-               <i class="fas fa-truck d-block text-muted mb-1"></i>
-               <span>Free Shipping</span>
-             </div>
-             <div class="text-center px-1">
-               <i class="fas fa-exchange-alt d-block text-muted mb-1"></i>
-               <span>Easy Returns</span>
-             </div>
-             <div class="text-center px-1">
-               <i class="fas fa-lock d-block text-muted mb-1"></i>
-               <span>Secure Payment</span>
-             </div>
-           </div>
-         </div>
-       </div>
-     </div>
-   </div>
-</div>
  
  <style>
    .modal-lg {
@@ -552,12 +553,6 @@
                                           <span class="product-tooltip">Add to Cart</span>
                                        </button>
                                     </form>
-                                    <button type="button" class="product-action-btn" data-bs-toggle="modal" data-bs-target="#producQuickViewModal">
-                                       <svg width="26" height="18" viewBox="0 0 26 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M13.092 4.55026C10.5878 4.55026 8.55683 6.58125 8.55683 9.08541C8.55683 11.5896 10.5878 13.6206 13.092 13.6206C15.5961 13.6206 17.6271 11.5903 17.6271 9.08541C17.6271 6.5805 15.5969 4.55026 13.092 4.55026ZM13.092 12.1089C11.4246 12.1089 10.0338 10.7196 10.0338 9.05216C10.0338 7.38473 11.3898 6.02872 13.0572 6.02872C14.7246 6.02872 16.0807 7.38473 16.0807 9.05216C16.0807 10.7196 14.7594 12.1089 13.092 12.1089ZM25.0965 8.8768C25.0875 8.839 25.092 8.79819 25.0807 8.76115C25.0761 8.74528 25.0655 8.73621 25.0603 8.7226C25.0519 8.70144 25.0542 8.67574 25.0429 8.65533C22.8441 3.62131 18.1064 0.724854 13.0572 0.724854C8.00807 0.724854 3.17511 3.61677 0.975559 8.65079C0.966488 8.67196 0.968 8.69388 0.959686 8.71806C0.954395 8.73318 0.943812 8.74074 0.938521 8.7551C0.927184 8.7929 0.931719 8.83296 0.92416 8.8715C0.910555 8.93953 0.897705 9.00605 0.897705 9.07483C0.897705 9.14361 0.910555 9.20862 0.92416 9.2774C0.931719 9.31519 0.926428 9.35677 0.938521 9.39229C0.943057 9.40968 0.954395 9.41648 0.959686 9.4316C0.967244 9.45201 0.965732 9.4777 0.975559 9.49887C3.17511 14.5314 7.96121 17.381 13.0104 17.381C18.0595 17.381 22.8448 14.5374 25.0436 9.5034C25.055 9.48148 25.0527 9.45956 25.061 9.43538C25.0663 9.42253 25.0761 9.4127 25.0807 9.39758C25.092 9.36055 25.089 9.32049 25.0965 9.28118C25.1101 9.21315 25.1222 9.14739 25.1222 9.0771C25.1222 9.01058 25.1094 8.94482 25.0958 8.87604L25.0965 8.8768ZM13.0104 15.8692C8.72841 15.8692 4.51298 13.6123 2.44193 9.07407C4.49333 4.55177 8.76469 2.23582 13.0572 2.23582C17.349 2.23582 21.5251 4.55404 23.5773 9.07861C21.5266 13.6002 17.3036 15.8692 13.0104 15.8692Z" fill="white" />
-                                       </svg>
-                                       <span class="product-tooltip">Quick View</span>
-                                    </button>
                                     <form action="{{ route('wishlist.store') }}" method="POST" style="display: inline;">
                                        @csrf
                                        <input type="hidden" name="product_id" value="{{ $product->id }}">                                      
@@ -859,30 +854,8 @@ $('.add-to-wishlist').on('click', function(e) {
  <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Bootstrap JS (لو تحتاجه للـ modal) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Quick View Script -->
-<script>
-   $(document).on('click', '.quick-view-btn', function(e) {
-       e.preventDefault();
-       let productId = $(this).data('id');
-       console.log("Product ID:", productId);
-
-       $.ajax({
-           url: `/Quick_View_Modal/${productId}`,
-           type: 'GET',
-           success: function(data) {
-               $('#producQuickViewModal .modal-content').html(data);
-               $('#producQuickViewModal').modal('show');
-           },
-           error: function(xhr) {
-               alert('Failed to load product details.');
-               console.error(xhr.responseText);
-           }
-       });
-   });
-</script>
 
 
 

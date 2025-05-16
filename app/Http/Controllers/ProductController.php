@@ -144,11 +144,11 @@ class ProductController extends Controller
     public function showProducts(Request $request)
     {
         $products = Product::with(['category', 'productImages', 'discount']);
-
+        
         if ($request->filled('category_id')) {
             $products->where('category_id', $request->category_id);
         }
-
+        
         if ($request->filled('price')) {
             switch ($request->price) {
                 case 'under50':
@@ -165,45 +165,58 @@ class ProductController extends Controller
                     break;
             }
         }
-
-        // فلاتر حسب التاريخ باستخدام Carbon (منتجات جديدة)
+        
         if ($request->filled('category') && $request->category == 'new') {
             $today = Carbon::today();
-            $products->where('created_at', '>=', $today->subDays(7)); // المنتجات التي تم إضافتها في آخر 7 أيام
+            $products->where('created_at', '>=', $today->subDays(7)); 
         }
-
-        // فلاتر حسب التقييم (منتجات الأعلى تقييمًا)
+        
         if ($request->filled('category') && $request->category == 'top') {
-            $products->orderBy('averageRating', 'desc'); // المنتجات الأعلى تقييمًا
+            $products->orderBy('averageRating', 'desc');
         }
-
+        
+        if ($request->filled('query')) {
+            $query = $request->get('query');
+            $products->where('name', 'like', "%{$query}%")
+                     ->orWhere('description', 'like', "%{$query}%");
+        }
+    
         $products = $products->paginate(8)->appends($request->query());
+        
         $categories = \App\Models\Category::all();
-
+        
         return view('product', compact('products', 'categories'));
     }
+    
+    
+    
     
 
     public function viewProduct($id)
     {
         $product = Product::with('productImages', 'category', 'reviews')->findOrFail($id);
+        
         $averageRating = $product->reviews()->avg('rating');
         $reviewCount = $product->reviews()->count();
-
+    
         $user = auth()->user();
-
-        $hasPurchased = Order::where('user_id', $user->id)
-        ->whereHas('orderDetails', function ($query) use ($id) {
-            $query->where('product_id', $id);
-        })
-        ->where('status', 'completed')
-        ->exists();
-
-        $canReview = $hasPurchased;
-
-
+    
+        if ($user) {
+            $hasPurchased = Order::where('user_id', $user->id)
+                ->whereHas('products', function ($query) use ($id) {
+                    $query->where('product_id', $id);
+                })
+                ->where('status', 'completed')
+                ->exists();
+    
+            $canReview = $hasPurchased;
+        } else {
+            $canReview = false;
+        }
+    
         return view('product-details', compact('product', 'averageRating', 'reviewCount', 'canReview'));
     }
+    
 
     public function quickViewAjax($id)
     {
@@ -236,9 +249,9 @@ class ProductController extends Controller
         $search = $request->input('query', '');
 
         if (!empty($search)) {
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
+            $query->where('name', 'like', "%{$search}%");
         }
+        
 
         if ($request->has('category_id') && $request->category_id != '') {
             $query->where('category_id', $request->category_id);

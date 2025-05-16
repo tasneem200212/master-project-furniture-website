@@ -53,8 +53,16 @@
                 <!-- Cupon Management -->
                 <li class="nav-item {{ Route::currentRouteName() == 'admin.cupon.index' ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('admin.cupon.index') }}">
-                        <i class="menu-icon fa fa-tags mr-2"></i>  <!-- Changed the icon -->
-                        <span class="menu-title">Cuopons</span>
+                        <i class="menu-icon fa fa-tags mr-2"></i>
+                        <span class="menu-title">Coupons</span>
+                    </a>
+                </li>
+
+                <!-- Inventories Management -->
+                <li class="nav-item {{ Route::currentRouteName() == 'admin.inventory.index' ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('admin.inventory.index') }}">
+                        <i class="menu-icon fas fa-boxes mr-2"></i>
+                        <span class="menu-title">Inventory</span>
                     </a>
                 </li>
                 

@@ -46,6 +46,9 @@
         }
     </style>
 
+    <!-- SweetAlert CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
 </head>
 
 
@@ -126,6 +129,19 @@
             }
         });
     </script>
+
+@if(Session::has('swal'))
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    Swal.fire({
+        icon: '{{ Session::get("swal.icon") }}',
+        title: '{{ Session::get("swal.title") }}',
+        text: '{{ Session::get("swal.text") }}',
+        showConfirmButton: {{ Session::get("swal.showConfirmButton", true) }},
+        timer: {{ Session::get("swal.timer", null) }}
+    });
+</script>
+@endif
 </body>
 
 </html>

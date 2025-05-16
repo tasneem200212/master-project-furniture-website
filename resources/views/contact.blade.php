@@ -83,19 +83,25 @@
                   </div>
                </div>
                <div class="col-xxl-6 col-xl-6">
+                  @if (auth()->check())
                   @if ($errors->any())
-   <div class="alert alert-danger">
-      <ul>
-         @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-         @endforeach
-      </ul>
-   </div>
-@endif
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-   {{ session('success') }}
-   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
- </div>
+                      <div class="alert alert-danger">
+                          <ul>
+                              @foreach ($errors->all() as $error)
+                                  <li>{{ $error }}</li>
+                              @endforeach
+                          </ul>
+                      </div>
+                  @endif
+              
+                  @if (session('success'))
+                      <div class="alert alert-success alert-dismissible fade show" role="alert">
+                          {{ session('success') }}
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                  @endif
+              @endif
+              
  
 
                   <div class="contact-from">

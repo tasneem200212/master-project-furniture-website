@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('coupons', function (Blueprint $table) {
             $table->integer('times_used')->default(0);
-            $table->integer('max_usage')->default(1);
+            $table->integer('max_usage')->nullable();
         });
     }
     

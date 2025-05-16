@@ -66,7 +66,8 @@
                     <td>
                         <a href="{{ route('admin.orders.edit', $order->id) }}" class="btn btn-info btn-sm">Edit</a>
                         <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-warning btn-sm">Show</a>
-                        <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline;"
+                            onsubmit="return confirm('Are you sure you want to delete this order? All their data will be lost!');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>

@@ -5,8 +5,9 @@
              <div class="footer-grid-3">
                 <div class="footer-widget-4">
                    <div class="footer-logo mb-35">
-                      <a href="{{route('Pro.index')}}"><img src="assets/imgs/furniture/logo/logo-light.svg"
-                            alt="image bnot found"></a>
+                     <a href="{{ route('Pro.index') }}">
+                        <img src="http://localhost:8000/storage/images/logo-light.svg" alt="Logo" class="main-logo">
+                     </a>
                    </div>
                    <p>Welcome to our online furniture store, offering stylish, high-quality pieces to transform your home. Enjoy seamless shopping with detailed descriptions, high-resolution images, and exceptional customer service. Let us help you create spaces that reflect your unique taste and lifestyle.
 
@@ -80,23 +81,6 @@
              <div class="footer-copyright-text">
                 <p class="mb-0">© All Copyright 2024 by <a target="_blank" class="furniture-clr-hover"
                       href="#">Addina</a></p>
-             </div>
-             <div class="footer-payment d-flex align-items-center gap-2">
-                <div class="footer-payment-item mb-0">
-                   <div class="footer-payment-thumb">
-                      <img src="assets/imgs/icons/payoneer.png" alt="">
-                   </div>
-                </div>
-                <div class="footer-payment-item mb-0">
-                   <div class="footer-payment-thumb">
-                      <img src="assets/imgs/icons/maser.png" alt="">
-                   </div>
-                </div>
-                <div class="footer-payment-item">
-                   <div class="footer-payment-thumb">
-                      <img src="assets/imgs/icons/paypal.png" alt="">
-                   </div>
-                </div>
              </div>
              <div class="footer-conditions">
                 <ul>

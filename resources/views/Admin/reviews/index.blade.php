@@ -30,10 +30,13 @@
                     <td>{{ $review->rating }}</td>
                     <td>{{ $review->comment }}</td>
                     <td>
-                        <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST" style="display:inline;"
+                            onsubmit="return confirm('Are you sure you want to delete this coupon?');">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
                         </form>
                     </td>
                 </tr>

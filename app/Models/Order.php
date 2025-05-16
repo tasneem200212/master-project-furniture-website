@@ -6,17 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
 class Order extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'status', 'total_price', 'shipping_address_id'
+        'user_id', 'status', 'total_price', 'payment_method_id', 'shipping_address_id'
     ];
 
-    protected $dates = ['deleted_at']; 
-
+    protected $dates = ['deleted_at'];
 
     public function user()
     {
@@ -25,18 +23,13 @@ class Order extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'order_product', 'order_id', 'product_id')
-                    ->withPivot('quantity');
+        return $this->belongsToMany(Product::class, 'order_details')
+                    ->withPivot('quantity', 'price');
     }
     
 
     public function shippingAddress()
     {
         return $this->belongsTo(ShippingAddress::class);
-    }  
-
-    public function orderDetails()
-    {
-        return $this->hasMany(OrderDetail::class);
     }
 }

@@ -86,7 +86,6 @@
                                         </td>
                                         <td class="align-middle">
                                             <h6 class="mb-0">{{ $item->name }}</h6>
-                                            <small class="text-muted">SKU: {{ $item->sku ?? 'N/A' }}</small>
                                         </td>
                                         <td class="align-middle text-center">JD{{ number_format($item->price, 2) }}</td>
                                         <td class="align-middle text-center">{{ $item->pivot->quantity }}</td>
@@ -119,7 +118,7 @@
 
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-between mt-5">
-                        <a href="{{ route('profile') }}" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                        <a href="{{ route('user.profile') }}" class="btn btn-outline-secondary rounded-pill px-4 py-2">
                             <i class="fas fa-arrow-left me-2"></i> Back to Profile
                         </a>
                         <div>

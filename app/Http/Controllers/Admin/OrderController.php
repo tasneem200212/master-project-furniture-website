@@ -32,11 +32,16 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::findOrFail($id);
-        $products = $order->products()->paginate(6);
-
+        // جلب الطلب مع المنتجات المرتبطة باستخدام التصفح (pagination)
+        $order = Order::with('products')->findOrFail($id);
+    
+        // استخدام paginate بدلاً من get للحصول على المنتجات
+        $products = $order->products()->paginate(10);  // تحديد 10 كعدد المنتجات في كل صفحة
+    
         return view('admin.orders.show', compact('order', 'products'));
     }
+    
+    
     
     public function edit($id)
     {
@@ -53,7 +58,7 @@ class OrderController extends Controller
 
         $order = Order::findOrFail($id);
 
-        $order->status = $request->status;
+        $order->status = $request->input('status');
         $order->save();
 
         return redirect()->route('admin.orders.index')->with('success', 'Order updated successfully!');

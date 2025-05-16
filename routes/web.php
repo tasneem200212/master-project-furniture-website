@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\ProductAdminController;
 use App\Http\Controllers\Admin\categoryAdminController;
 use App\Http\Controllers\Admin\ReviewsAdminController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\InventoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,34 +35,60 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Admin Routes
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-
-    // Product management (resourceful route)
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('dashboard', [AdminController::class, 'index'])->name('dashboard');
+    
+    // Product management
     Route::resource('products', ProductAdminController::class);
-
     Route::resource('categories', CategoryAdminController::class);
-
     Route::resource('reviews', ReviewsAdminController::class);
-
+    
     // Orders Management
     Route::resource('orders', OrderController::class);
-    // Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-
+    
     // Customers Management
     Route::resource('users', UserAdminController::class);
-
+    
+    // Admin Profile
     Route::get('profile', [AdminProfileController::class, 'show'])->name('profile');
     Route::put('profile/{id}', [AdminProfileController::class, 'update'])->name('profile.update');
-
+    
+    // Other admin routes
     Route::resource('cupon', CuponController::class);
-
-
-    // Payment Methods
     Route::resource('payment_methods', PaymentMethodController::class);
-
+    Route::resource('inventory', InventoryController::class);
 });
+
+// // Admin Routes
+// Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+//     // Dashboard
+//     Route::get('dashboard', [AdminController::class, 'index'])->name('dashboard');
+    
+//     // Content Management
+//     Route::prefix('content')->name('content.')->group(function () {
+//         Route::resource('products', ProductAdminController::class);
+//         Route::resource('categories', CategoryAdminController::class);
+//         Route::resource('reviews', ReviewsAdminController::class);
+//     });
+    
+//     // Sales Management
+//     Route::prefix('sales')->name('sales.')->group(function () {
+//         Route::resource('orders', OrderController::class);
+//         Route::resource('coupons', CuponController::class)->except(['show']);
+//         Route::resource('payment-methods', PaymentMethodController::class);
+//     });
+    
+//     // User Management
+//     Route::prefix('users')->name('users.')->group(function () {
+//         Route::resource('customers', UserAdminController::class);
+//         Route::get('profile', [AdminProfileController::class, 'show'])->name('profile.show');
+//         Route::put('profile', [AdminProfileController::class, 'update'])->name('profile.update');
+//     });
+    
+//     // Inventory Management
+//     Route::resource('inventory', InventoryController::class)->only(['index', 'edit', 'update']);
+// });
 
 
 
@@ -86,9 +113,11 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-Route::get('profile', [UserProfileController::class, 'show'])->name('profile');
-
-Route::put('/profile/{id}', [UserProfileController::class, 'update'])->middleware('auth')->name('profile.update');
+    Route::group(['middleware' => ['auth', 'user']], function() {
+        // User Profile Routes
+        Route::get('user/profile', [UserProfileController::class, 'show'])->name('user.profile');
+        Route::put('user/profile/{id}', [UserProfileController::class, 'update'])->name('user.profile.update');
+    });
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 
@@ -114,28 +143,20 @@ Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon'])->name(
 Route::get('pro', [ProductController::class, 'viewProductrating'])->name('product-rating');
 
 
-// Route::get('/header-counts', [ProductController::class, 'getCounts'])->name('header.counts');
-
-
-
 
 Route::resource('cart', CartController::class);
-
-// Route::get('/cart', [CartController::class, 'index'])->name('cart.showCart');
-// Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-// Route::delete('/cart/remove/{id}', [CartController::class, 'delete'])->name('cart.remove');
 
 
 
 Route::get('/wishlist', [WhishlistController::class, 'show'])->name('wishlist');
 
 Route::post('/wishlist/add', [WhishlistController::class, 'store'])->name('wishlist.store');
+Route::post('/wishlist/addtoCart', [WhishlistController::class, 'addtoCart'])->name('wishlist.addtoCart');
 Route::get('/wishlist/remove/{id}', [WhishlistController::class, 'destroy'])->name('wishlist.destroy');
 
 Route::resource('checkout', CheckoutController::class);
 Route::get('payment/paypal/{order_id}', [PaymentController::class, 'paypal'])->name('payment.paypal');
 Route::get('payment/bank/{order_id}', [PaymentController::class, 'bank'])->name('payment.bank');
-
 
 Route::get('/store', function () {
     return view('store');

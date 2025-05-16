@@ -20,40 +20,103 @@
                   <div class="dropdown user-dropdown">
                      @auth
                      <button class="btn btn-link dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                         <img src="{{ Auth::user()->profile_image ? asset('storage/' . Auth::user()->profile_image) : 'images/admin.jpg' }}" alt="Admin" class="user-avatar rounded-circle" width="45" height="45">
-                     </button>
+                        <img 
+                            src="{{ Auth::user()->profile_image ? asset('storage/' . Auth::user()->profile_image) : asset('storage/images/default-user.jpg') }}" 
+                            alt="User Avatar" 
+                            class="user-avatar rounded-circle" 
+                            width="45" height="45"
+                        >
+                    </button>
                      <div class="dropdown-menu" aria-labelledby="userDropdown">
                          <div class="px-4 py-2 border-bottom">
                              <h6 class="mb-0">{{ Auth::user()->name }}</h6>
                              <small class="text-muted">{{ Auth::user()->email }}</small>
                          </div>
-                         <ul class="list-unstyled">
-                             <li>
-                                 <form action="{{ route('profile') }}" method="GET" style="display:inline;">
-                                     @csrf
-                                     <button type="submit" class="furniture-clr-hover btn btn-link w-100 text-left" style="background-color: #b18b5e; color: white;">
-                                         <i class="fas fa-user mr-2"></i> My Profile
+                         <ul class="list-unstyled p-2">
+                             <li class="mb-2">
+                                 <form action="{{ route('user.profile') }}" method="GET" class="w-100">
+                                     <button type="submit" class="btn btn-light w-100 text-start py-2 px-3 rounded-pill">
+                                         <i class="fas fa-user me-2 text-brown"></i>
+                                         My Profile
                                      </button>
                                  </form>
                              </li>
                              <li>
-                                 <form method="POST" action="{{ route('logout') }}">
+                                 <form method="POST" action="{{ route('logout') }}" class="w-100">
                                      @csrf
-                                     <button type="submit" class="furniture-clr-hover btn btn-link w-100 text-left text-black">
-                                         <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                     <button type="submit" class="btn btn-light w-100 text-start py-2 px-3 rounded-pill">
+                                         <i class="fas fa-sign-out-alt me-2 text-danger"></i>
+                                         Logout
                                      </button>
                                  </form>
                              </li>
                          </ul>
                      </div>
                      @endauth
-         
+                 
                      @guest
-                     <button class="btn btn-link" onclick="window.location.href='{{ route('login') }}'">
+                     <button class="btn fw-bold" onclick="window.location.href='{{ route('login') }}'" style="color:white; font-size: 24px; font-weight: bold;">
                          Login
-                     </button>
+                     </button>                    
                      @endguest
-                  </div>
+                 </div>
+                 
+                 <style>
+                     .text-brown {
+                         color: #b18b5e;
+                     }
+                     
+                     .dropdown-toggle::after {
+                         display: none;
+                     }
+                 
+                     .dropdown-menu {
+                         background-color: #f8f9fa;
+                         border-radius: 8px;
+                         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+                     }
+                 
+                     .dropdown-item {
+                         padding: 12px 20px;
+                         border-radius: 8px;
+                         font-size: 1.2rem;
+                         transition: background-color 0.3s ease;
+                     }
+                     button {
+                        font-size: 1.2rem !important;
+                     }
+                 
+                     .dropdown-item:hover {
+                         background-color: #f0f0f0;
+                     }
+                 
+                     .dropdown-item:focus {
+                         background-color: #e0e0e0;
+                     }
+                 
+                     .btn-light {
+                         color: #333;
+                         border: 1px solid #ddd;
+                         background-color: #fff;
+                         transition: background-color 0.3s, color 0.3s;
+                     }
+                 
+                     .btn-light:hover {
+                         background-color: #f8f9fa;
+                         color:#b18b5e;
+                     }
+                 
+                     .dropdown-menu .px-4 {
+                         padding-left: 1.5rem;
+                         padding-right: 1.5rem;
+                     }
+                 
+                     .user-avatar {
+                         border: 3px solid #9b7a52;
+                         border-radius: 50%;
+                         padding: 2px;
+                     }
+                 </style>
                </div>
             </div>
          </div>
@@ -72,40 +135,25 @@
                      <div class="mean__menu-wrapper furniture__menu d-none d-lg-block">
                         <div class="main-menu">
                            <nav id="mobile-menu">
-                              <ul>
-                                 <li class="has-dropdown">
-                                    <a href="{{route('Pro.index')}}">Home</a>
-                                 </li>
-                                 <li>
-                                    <a href="{{route('about')}}">About</a>
-                                 </li>
-                                 <li class="has-dropdown">
-                                    <a href="{{route('product.show')}}">Shop</a>
-                                 </li>
-                                 <li>
-                                    <a href="{{route('contact')}}">Contact</a>
-                                 </li>
-                              </ul>
+                               <ul>
+                                   <li class="has-dropdown {{ request()->routeIs('Pro.index') ? 'active' : '' }}">
+                                       <a href="{{ route('Pro.index') }}">Home</a>
+                                   </li>
+                                   <li class="{{ request()->routeIs('about') ? 'active' : '' }}">
+                                       <a href="{{ route('about') }}">About</a>
+                                   </li>
+                                   <li class="has-dropdown {{ request()->routeIs('product.show') ? 'active' : '' }}">
+                                       <a href="{{ route('product.show') }}">Shop</a>
+                                   </li>
+                                   <li class="{{ request()->routeIs('contact') ? 'active' : '' }}">
+                                       <a href="{{ route('contact') }}">Contact</a>
+                                   </li>
+                               </ul>
                            </nav>
-                        </div>
+                       </div>
                      </div>
                   </div>
                   <div class="header-right d-inline-flex align-items-center justify-content-end">
-                     <div class="header-search d-none d-xxl-block">
-                       <form method="GET" action="#">
-                       <input type="text" name="query" placeholder="Search...">
-                           <button type="submit">
-                              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                 <path d="M13.4443 13.4445L16.9999 17" stroke="white" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                                 <path
-                                    d="M15.2222 8.11111C15.2222 12.0385 12.0385 15.2222 8.11111 15.2222C4.18375 15.2222 1 12.0385 1 8.11111C1 4.18375 4.18375 1 8.11111 1C12.0385 1 15.2222 4.18375 15.2222 8.11111Z"
-                                    stroke="white" stroke-width="2" />
-                              </svg>
-                           </button>
-                        </form>
-                     </div>
                      <div class="header-action d-flex align-items-center ml-30">
                         <div class="header-action-item">
                            <a href="{{route('wishlist')}}" class="header-action-btn">
@@ -150,6 +198,33 @@
       </div>
    </div>
 </header>
+
+<style>
+   .main-menu ul li {
+       position: relative;
+       transition: all 0.3s ease;
+   }
+   
+   .main-menu ul li.active a {
+       color: #b18b5e !important;
+   }
+   
+   .main-menu ul li.active::after {
+       content: '';
+       position: absolute;
+       bottom: -5px;
+       left: 50%;
+       transform: translateX(-50%);
+       width: 30px;
+       height: 2px;
+       background-color: #b18b5e;
+       transition: all 0.3s ease;
+   }
+   
+   .main-menu ul li:hover::after {
+       width: 50px;
+   }
+   </style>
 
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

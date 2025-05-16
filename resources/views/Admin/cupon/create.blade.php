@@ -22,8 +22,15 @@
             <label for="expiry_date">Expiry Date</label>
             <input type="date" class="form-control" id="expiry_date" name="expiry_date" required>
         </div>
-
+        
+        <div class="form-group">
+            <label for="max_usage">Max Usage</label>
+            <input type="number" class="form-control" id="max_usage" name="max_usage" min="1" required>
+        </div>
+        
         <button type="submit" class="btn" style="background-color: #9b7a52; color: white;">Add Cupon</button>
+        <a href="{{ route('admin.cupon.index') }}" class="btn btn-secondary ml-3">Cancel</a>
+
     </form>
 </div>
 @endsection

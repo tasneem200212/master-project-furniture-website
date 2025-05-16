@@ -67,7 +67,8 @@
                     </td>                    <td>
                         <a href="{{ route('admin.products.show', $product->id) }}" class="btn btn-info btn-sm">Show</a>
                         <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline;"
+                            onsubmit="return confirm('Are you sure you want to delete this Product? All their data will be lost!');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>

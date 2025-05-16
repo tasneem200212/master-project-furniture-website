@@ -6,128 +6,202 @@ use App\Models\Order;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\OrderDetail;
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
+use App\Events\OrderCreated;
+use App\Models\Coupon;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class CheckoutController extends Controller
 {
     public function index()
     {
-        // الحصول على بيانات السلة من قاعدة البيانات
+        $paymentMethods = PaymentMethod::all();
         $cart = Cart::where('user_id', Auth::id())->get();
-    
-        // التأكد من أن السلة غير فارغة
+
         if ($cart->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty. Please add products to your cart.');
         }
-    
-        // الحصول على المستخدم المسجل
+
         $user = Auth::user();
-    
-        // التحقق من وجود طلب قيد المعالجة للمستخدم
         $order = Order::where('user_id', $user->id)->where('status', 'pending')->first();
-    
-        // إذا لم يتم العثور على الطلب، نقوم بإنشاء طلب جديد
+
         if (!$order) {
             $order = new Order();
             $order->user_id = $user->id;
-            $order->payment_method_id = 1; // طريقة الدفع الافتراضية
-            $order->shipping_address_id = 1; // العنوان الافتراضي
+            $order->payment_method_id = 1;
+            $order->shipping_address_id = 1;
             $order->status = 'pending';
-            $order->total_price = 0; // سيتم تحديث هذا السعر بعد حساب إجمالي السلة
+            $order->total_price = 0;
             $order->save();
         }
-    
-        // حساب المبلغ الإجمالي للسلة
+
         $totalAmount = $cart->sum(function ($item) {
-            return $item->product->price * $item->quantity; // حساب سعر المنتج × الكمية
+            return $item->product->price * $item->quantity;
         });
-    
-        // الحصول على الكوبون من الجلسة
+
         $coupon = session('coupon');
-    
         $discountAmount = 0;
-        if ($coupon) {
-            $discountAmount = ($coupon->discount_percentage / 100) * $totalAmount; // حساب الخصم
+        
+        if ($coupon && $coupon->expiry_date >= now()) {
+            $discountAmount = ($totalAmount * $coupon->discount_percentage) / 100;
         }
-    
-        // حساب المبلغ النهائي بعد الخصم
+
         $totalAmountAfterDiscount = $totalAmount - $discountAmount;
-    
-        // التأكد من تحديث السعر الإجمالي في الطلب
-        $order->total_price = $totalAmountAfterDiscount; // تحديث السعر الإجمالي للطلب بعد الخصم
-        $order->save(); // حفظ الطلب مع السعر المحدث
-    
-        // الحصول على تفاصيل الطلب (إذا كانت موجودة)
-        $orderDetails = OrderDetail::where('order_id', $order->id)
-                                    ->with('product') // تضمين بيانات المنتج لكل تفصيل
-                                    ->get();
-    
-        // عرض صفحة الدفع مع كافة البيانات الضرورية
-        return view('checkout', compact('cart', 'order', 'orderDetails', 'totalAmount', 'totalAmountAfterDiscount', 'discountAmount', 'coupon', 'user'));
+        $order->total_price = $totalAmountAfterDiscount;
+        $order->save();
+
+        $orderDetails = Cart::where('user_id', auth()->id())->with('product')->get();
+        $cartItems = Cart::where('user_id', auth()->id())
+            ->with('product.productImages')
+            ->get();
+
+        $subtotal = $cartItems->sum(function ($item) {
+            return $item->product->price * $item->quantity;
+        });
+
+        $total = $subtotal - $discountAmount;
+
+        return view('checkout', compact('cart', 'order', 'orderDetails', 'totalAmount', 'totalAmountAfterDiscount', 'discountAmount', 'coupon', 'user', 'paymentMethods', 'total'));
     }
+
+    public function store(Request $request)
+    {
+        Log::info('Order store method entered for user: ' . Auth::id());
     
+        // تحقق من وجود طلب معلق يحتوي على منتجات
+        $existingOrder = Order::where('user_id', Auth::id())
+                        ->where('status', 'pending')
+                        ->whereHas('products')  // هذا يضمن الطلب فيه منتجات
+                        ->first();
     
+        if ($existingOrder) {
+            return redirect()->route('Pro.index')->with('error', 'You already have a pending order.');
+        }
     
+        DB::beginTransaction();
     
- 
-
-public function store(Request $request)
-{
-    // التحقق من صحة البيانات
-    $request->validate([
-        'first_name' => 'required|string|max:255',
-        'last_name' => 'required|string|max:255',
-        'address' => 'required|string|max:255',
-        'city' => 'required|string|max:255',
-        'state' => 'required|string|max:255',
-        'postcode' => 'required|string|max:255',
-        'email' => 'required|email|max:255',
-        'phone' => 'required|string|max:20',
-        'payment_method_id' => 'required|exists:payment_methods,id',
-        'products' => 'required|array',
-    ]);
-
-    // الحصول على بيانات السلة من الجلسة
-    $cart = session('cart', []);
-
-    // حساب إجمالي السلة
-    $totalAmount = collect($cart)->sum(function ($item) {
-        return $item['price'] * $item['quantity']; // حساب سعر كل منتج * الكمية
-    });
-
-    // إنشاء طلب جديد
-    $order = new Order();
-    $order->user_id = Auth::id();
-    $order->payment_method_id = $request->input('payment_method_id');
-    $order->shipping_address_id = $request->input('shipping_address_id'); // التأكد من إرسال معرف العنوان الصحيح
-    $order->status = 'pending';
-    $order->total_price = $totalAmount; // استخدام الإجمالي المحسوب
-    $order->save();
-
-    // إضافة المنتجات إلى تفاصيل الطلب
-    foreach ($request->input('products') as $productData) {
-        $product = Product::find($productData['product_id']);
-        if ($product) {
-            OrderDetail::create([
-                'order_id' => $order->id,
-                'product_id' => $product->id,
-                'quantity' => $productData['quantity'],
-                'price' => $product->price,
-                'total_price' => $product->price * $productData['quantity'],
+        try {
+            $validated = $request->validate([
+                'payment_method_id' => 'required|integer|exists:payment_methods,id',
+                'shipping_address_id' => 'required|integer|exists:shipping_addresses,id',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'address' => 'required|string|max:500',
+                'city' => 'required|string|max:255',
+                'state' => 'required|string|max:255',
+                'postcode' => 'required|string|max:20',
+                'email' => 'required|email|max:255',
+                'phone' => 'required|string|max:20',
+                'total_amount' => 'required|numeric|min:0'
             ]);
+    
+            $cartItems = Cart::with('product')
+                ->where('user_id', Auth::id())
+                ->get();
+    
+            if ($cartItems->isEmpty()) {
+                throw new \Exception('The shopping cart is empty');
+            }
+    
+            $subtotal = round($cartItems->sum(fn($item) => $item->product->price * $item->quantity), 2);
+            $coupon = session('coupon');
+            $discountAmount = 0;
+    
+            if ($coupon && $coupon->expiry_date >= now()) {
+                $discountAmount = round(($subtotal * (float)$coupon->discount_percentage) / 100, 2);
+            }
+    
+            if ($subtotal <= 0) {
+                throw new \Exception('Cannot create order with empty cart total.');
+            }
+    
+            $finalAmount = round($subtotal - $discountAmount, 2);
+    
+            Log::info('Order Calculation Debug', [
+                'subtotal' => $subtotal,
+                'discount' => $discountAmount,
+                'finalAmount' => $finalAmount,
+                'totalAmountFromRequest' => $validated['total_amount']
+            ]);
+    
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'payment_method_id' => $validated['payment_method_id'],
+                'shipping_address_id' => $validated['shipping_address_id'],
+                'status' => 'pending',
+                'total_price' => $finalAmount,
+                'billing_info' => json_encode([
+                    'first_name' => $validated['first_name'],
+                    'last_name' => $validated['last_name'],
+                    'address' => $validated['address'],
+                    'city' => $validated['city'],
+                    'state' => $validated['state'],
+                    'postcode' => $validated['postcode'],
+                    'email' => $validated['email'],
+                    'phone' => $validated['phone']
+                ])
+            ]);
+    
+            foreach ($cartItems as $item) {
+                $order->products()->attach($item->product_id, [
+                    'quantity' => $item->quantity,
+                    'price' => $item->product->price,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+    
+            // حذف الطلبات المعلقة الفارغة القديمة (اختياري)
+            Order::where('user_id', Auth::id())
+                ->where('status', 'pending')
+                ->whereDoesntHave('products')
+                ->delete();
+    
+            Cart::where('user_id', Auth::id())->delete();
+            session()->forget('coupon');
+    
+            DB::commit();
+            event(new OrderCreated($order));
+    
+            return redirect()->route('Pro.index')
+                ->with('success', 'Your order has been successfully created! Thank you for choosing our store. We will prepare your order with special touches to give you the best experience.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+            return back()->withErrors($e->validator)->withInput();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Order Creation Failed', [
+                'error' => $e->getMessage(),
+                'user' => Auth::id(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            session()->forget('coupon');
+    
+            return back()
+                ->with('error', 'Order creation failed: ' . $e->getMessage())
+                ->withInput();
         }
     }
+    
+    
+    private function isCouponValid($coupon)
+    {
+        return $coupon &&
+            $coupon->expiry_date >= now() &&
+            $coupon->is_active;
+    }
 
-    // مسح السلة من الجلسة بعد تقديم الطلب
-    session()->forget('cart');
-
-    return redirect()->route('order.success')->with('success', 'Your order has been placed successfully!');
+    protected function processPayment($amount, $paymentMethodId)
+    {
+        return [
+            'success' => true,
+            'transaction_id' => 'PAY-' . Str::random(16),
+            'message' => 'Payment completed successfully'
+        ];
+    }
 }
-
-    
-    
-    
-    
-}    

@@ -1,9 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Ecommerce Furniture')
+@section('title', 'Ecommerce Furniture - Cart')
 
 @section('content')
-
 
 <main>
     <!-- Breadcrumb area start -->
@@ -49,45 +48,48 @@
                             <tbody>
                                 @foreach ($cartItems as $item)
                                     <tr>
-                                        <td class="product-thumbnail"><a href="{{ route('product-details', $item->product->id) }}"><img src="{{ asset('storage/' . $item->product->productImages->first()->image_path) }}" alt='{{ $item->product->name }}'>
-                                        </a></td>
-                                        <td class="product-name"><a href="{{ route('product-details', $item->product->id) }}">{{ $item->product->name }}</a></td>
-                                        <td class="product-price"><span class="amount">JD{{ number_format($item->product->price, 2) }}</span></td>
+                                        <td class="product-thumbnail">
+                                            <a href="{{ route('product-details', $item->product->id) }}">
+                                                <img src="{{ asset('storage/' . $item->product->productImages->first()->image_path) }}" alt="{{ $item->product->name }}">
+                                            </a>
+                                        </td>
+                                        <td class="product-name">
+                                            <a href="{{ route('product-details', $item->product->id) }}">{{ $item->product->name }}</a>
+                                        </td>
+                                        <td class="product-price">
+                                            <span class="amount">JD{{ number_format($item->product->price, 2) }}</span>
+                                        </td>
                                         <td class="product-quantity text-center">
                                             <div class="product-quantity mt-10 mb-10">
                                                 <div class="product-quantity-form">
-                                                {{-- <form action="{{ route('cart.update', $item->id) }}" method="POST" class="d-flex align-items-center gap-2">
-                                                      @csrf
-                                                      @method('PUT')
-                                                  
-                                                      <div class="input-group" style="max-width: 140px;">
-                                                          <button type="button" class="btn btn-outline-secondary cart-minus">
-                                                              <i class="fa-solid fa-minus"></i>
-                                                          </button>
-                                                  
-                                                          <input class="form-control text-center cart-input" type="number" name="quantity" value="{{ $item->quantity }}" min="1">
-                                                  
-                                                          <button type="button" class="btn btn-outline-secondary cart-plus">
-                                                              <i class="fa-solid fa-plus"></i>
-                                                          </button>
-                                                      </div>
-                                                  </form> --}}
-
-                                                  <form action="#">
-                                                    <button class="cart-minus"><i class="fa-solid fa-minus"></i></button>
-                                                    <input class="cart-input" type="text" value="1">
-                                                    <button class="cart-plus"><i class="far fa-plus"></i></button>
-                                                 </form>
-                                                  
+                                                    <form action="{{ route('cart.update', $item->id) }}" method="POST" class="quantity-form">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="input-group" style="max-width: 140px;">
+                                                            <button type="button" class="btn btn-outline-secondary cart-minus">
+                                                                <i class="fa-solid fa-minus"></i>
+                                                            </button>
+                                                            <input class="form-control text-center cart-input" 
+                                                                   type="number" 
+                                                                   name="quantity" 
+                                                                   value="{{ $item->quantity }}" 
+                                                                   min="1">
+                                                            <button type="button" class="btn btn-outline-secondary cart-plus">
+                                                                <i class="fa-solid fa-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="product-subtotal"><span class="amount">${{ $item->product->price * $item->quantity }}</span></td>
+                                        <td class="product-subtotal">
+                                            <span class="amount">JD{{ number_format($item->product->price * $item->quantity, 2) }}</span>
+                                        </td>
                                         <td class="product-remove">
-                                            <form action="{{ route('cart.destroy', $item->id) }}" method="POST">
+                                            <form action="{{ route('cart.destroy', $item->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-lg ">
+                                                <button type="submit" class="btn btn-link text-danger">
                                                     <i class="fa fa-times"></i>
                                                 </button>
                                             </form>
@@ -111,15 +113,6 @@
                                             </span>
                                         </button>
                                     </form>
-                                    
-                                </div>
-                                <div class="coupon2">
-                                    {{-- <button onclick="window.location.reload()" class="fill-btn" type="submit">
-                                        <span class="fill-btn-inner">
-                                            <span class="fill-btn-normal">Update Cart</span>
-                                            <span class="fill-btn-hover">Update Cart</span>
-                                        </span>
-                                    </button> --}}
                                 </div>
                             </div>
                         </div>
@@ -131,24 +124,20 @@
 
                                 @if(session('success'))
                                 <div class="alert alert-success">{{ session('success') }}</div>
-                            @endif
-                            @if(session('error'))
+                                @endif
+                                @if(session('error'))
                                 <div class="alert alert-danger">{{ session('error') }}</div>
-                            @endif
-                            
-                            <ul class="mb-20">
-                                <li>Subtotal <span>JD{{ number_format($subtotal, 2) }}</span></li>
-                                {{-- @if($discountAmount > 0)
-                                    <li>Discount ({{ $coupon->code }}) <span>-JD{{ number_format($discountAmount, 2) }}</span></li>
-                                @endif --}}
-                                @if($coupon)
-                                <li>Discount ({{ $coupon->code }} - {{ round($coupon->discount_percentage) }}%) <span>-JD{{ number_format($discountAmount, 2) }}</span></li>
-                                <li>Total after Discount <span>JD{{ number_format($total, 2) }}</span></li>
-                            @else
-                            <li>No coupon applied</li>
-                            @endif
-                            
-                            </ul>
+                                @endif
+                                
+                                <ul class="mb-20">
+                                    <li>Subtotal <span>JD{{ number_format($subtotal, 2) }}</span></li>
+                                    @if($coupon)
+                                    <li>Discount ({{ $coupon->code }} - {{ round($coupon->discount_percentage) }}%) <span>-JD{{ number_format($discountAmount, 2) }}</span></li>
+                                    <li>Total after Discount <span>JD{{ number_format($total, 2) }}</span></li>
+                                    @else
+                                    <li>No coupon applied</li>
+                                    @endif
+                                </ul>
                                 <a class="fill-btn" href="{{ route('checkout.index') }}">
                                     <span class="fill-btn-inner">
                                         <span class="fill-btn-normal">Proceed to Checkout</span>
@@ -163,33 +152,68 @@
         </div>
     </div>
     <!-- Cart area end -->
-
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-          const minusButtons = document.querySelectorAll('.cart-minus');
-          const plusButtons = document.querySelectorAll('.cart-plus');
-  
-          minusButtons.forEach(function (btn) {
-              btn.addEventListener('click', function () {
-                  const input = btn.closest('form').querySelector('.cart-input');
-                  let value = parseInt(input.value);
-                  if (value > 1) {
-                      input.value = value - 1;
-                  }
-              });
-          });
-  
-          plusButtons.forEach(function (btn) {
-              btn.addEventListener('click', function () {
-                  const input = btn.closest('form').querySelector('.cart-input');
-                  let value = parseInt(input.value);
-                  input.value = value + 1;
-              });
-          });
-      });
-  </script>
-
 </main>
 
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Quantity adjustment functionality
+    const minusButtons = document.querySelectorAll('.cart-minus');
+    const plusButtons = document.querySelectorAll('.cart-plus');
+    const quantityInputs = document.querySelectorAll('.cart-input');
+
+    function updateCartItem(form) {
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-HTTP-Method-Override': 'PUT'
+            },
+            body: new URLSearchParams(new FormData(form))
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload(); // Refresh to see updated totals
+            } else {
+                console.error('Update failed');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    minusButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const form = btn.closest('.quantity-form');
+            const input = form.querySelector('.cart-input');
+            let value = parseInt(input.value);
+            if (value > 1) {
+                input.value = value - 1;
+                updateCartItem(form);
+            }
+        });
+    });
+
+    plusButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const form = btn.closest('.quantity-form');
+            const input = form.querySelector('.cart-input');
+            let value = parseInt(input.value);
+            input.value = value + 1;
+            updateCartItem(form);
+        });
+    });
+
+    quantityInputs.forEach(function (input) {
+        input.addEventListener('change', function () {
+            const form = input.closest('.quantity-form');
+            if (parseInt(input.value) >= 1) {
+                updateCartItem(form);
+            }
+        });
+    });
+});
+</script>
 @endsection

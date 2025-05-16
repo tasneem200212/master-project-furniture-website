@@ -12,7 +12,7 @@ class AdminProfileController extends Controller
 {
     public function show()
     {
-        $admin = Auth::user();
+        $admin= Auth::user();
         return view('admin.profile', compact('admin'));
     }
 

@@ -23,6 +23,8 @@
                     <th>Code</th>
                     <th>Discount Percentage</th>
                     <th>Expiry Date</th>
+                    <th>Times Used</th>
+                    <th>Max Usage</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -33,14 +35,23 @@
                         <td>{{ $cupon->code }}</td>
                         <td>{{ $cupon->discount_percentage }}%</td>
                         <td>{{ \Carbon\Carbon::parse($cupon->expiry_date)->format('d M, Y') }}</td>
+                        <td>{{ $cupon->times_used }}</td>
+                        <td>{{ $cupon->max_usage }}</td>
+
                         <td>
                             <a href="{{ route('admin.cupon.edit', $cupon->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="{{ route('admin.cupon.destroy', $cupon->id) }}" method="POST" style="display:inline;" id="delete-form-{{ $cupon->id }}">
-                                @csrf
-                                @method('DELETE')
-                                <!-- Add the onclick event for confirmation -->
-                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $cupon->id }})">Delete</button>
-                            </form>
+                            <form action="{{ route('admin.cupon.destroy', $cupon->id) }}" 
+                                method="POST" 
+                                style="display:inline;" 
+                                id="delete-form-{{ $cupon->id }}">
+                              @csrf
+                              @method('DELETE')
+                              <button type="button" 
+                                      class="btn btn-danger btn-sm" 
+                                      onclick="confirmDelete({{ $cupon->id }})">
+                                  <i class="fas fa-trash-alt"></i> Delete
+                              </button>
+                          </form>
                         </td>
                     </tr>
                 @endforeach
