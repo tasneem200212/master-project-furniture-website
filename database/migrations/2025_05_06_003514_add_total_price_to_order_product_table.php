@@ -14,7 +14,7 @@ class AddTotalPriceToOrderProductTable extends Migration
     public function up()
     {
         Schema::table('order_product', function (Blueprint $table) {
-            $table->decimal('total_price', 8, 2)->nullable();  // إضافة العمود total_price
+            $table->decimal('total_price', 8, 2)->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AddTotalPriceToOrderProductTable extends Migration
     public function down()
     {
         Schema::table('order_product', function (Blueprint $table) {
-            $table->dropColumn('total_price');  // إزالة العمود في حالة التراجع عن الميغريشن
+            $table->dropColumn('total_price');
         });
     }
 }

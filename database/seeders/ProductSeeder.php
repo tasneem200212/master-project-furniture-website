@@ -284,7 +284,7 @@ class ProductSeeder extends Seeder
             [
                 'name' => 'Luxurious Modern Bed with Gold Accents',
                 'description' => 'A queen‑size modern bed upholstered in plush velvet, featuring gold‑plated trim on the tufted headboard and footboard. Solid hardwood frame with reinforced slats for superior support and a sleek, glamorous look.',
-                'price' => 27.99,
+                'price' => 127.99,
                 'sales_count' => 0,
                 'category_id' => 2,
                 'weight' => '70 kg',

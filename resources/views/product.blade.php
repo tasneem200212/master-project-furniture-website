@@ -44,7 +44,6 @@
                 </div>
                 <div class="col-xxl-8 col-xl-8 col-lg-8 col-md-6">
                     <div class="product__filter-wrapper d-flex flex-wrap gap-3 align-items-center justify-content-md-end mb-30">
-                        <!-- Filter Button (for mobile) -->
                         <div class="bd-product__filter-btn d-lg-none">                         
                             <button type="button" class="btn btn-outline-dark" data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas">
                                 <i class="fa-solid fa-filter"></i>
@@ -52,11 +51,9 @@
                             </button>
                         </div>
                         
-                        <!-- Desktop Filter Section -->
                         <div class="d-none d-lg-block">
                             <div class="filter-section bg-light p-3 rounded shadow-sm">
                                 <form method="GET" action="{{ route('product.show') }}" class="row g-3 align-items-center">
-                                    <!-- Category Filter -->
                                     <div class="col-auto">
                                         <div class="filter-group">
                                             <label class="filter-label">Categories</label>
@@ -79,7 +76,6 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Price Filter -->
                                     <div class="col-auto">
                                         <div class="filter-group">
                                             <label class="filter-label">Price Range</label>
@@ -109,7 +105,6 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Clear Filters Button -->
                                     @if(request('category_id') || request('price'))
                                         <div class="col-auto">
                                             <a href="{{ route('product.show') }}" class="btn btn-outline-danger">
@@ -124,7 +119,6 @@
                 </div>
             </div>
 
-                        <!-- Add the search form -->
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="header-search">
@@ -200,7 +194,6 @@
                 <div class="bd-basic__pagination mt-50 d-flex align-items-center justify-content-center">
                     <nav>
                         <ul>
-                            <!-- Previous Button -->
                             @if ($products->onFirstPage())
                                 <li class="disabled">
                                 </li>
@@ -212,7 +205,6 @@
                                 </li>
                             @endif
                 
-                            <!-- Page Numbers -->
                             @foreach ($products->getUrlRange(1, $products->lastPage()) as $page => $url)
                                 @if ($page == $products->currentPage())
                                     <li>
@@ -225,7 +217,6 @@
                                 @endif
                             @endforeach
                 
-                            <!-- Next Button -->
                             @if ($products->hasMorePages())
                                 <li>
                                     <a href="{{ $products->nextPageUrl() }}">

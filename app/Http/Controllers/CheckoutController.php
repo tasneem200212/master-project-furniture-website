@@ -184,7 +184,7 @@ class CheckoutController extends Controller
             event(new OrderCreated($order));
 
             return redirect()->route('Pro.index')
-                ->with('success', 'Your order has been successfully created! Thank you for choosing our store. We will prepare your order with special touches to give you the best experience.');
+                ->with('order_success', 'Your order has been successfully created! Thank you for choosing our store. We will prepare your order with special touches to give you the best experience.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
             return back()->withErrors($e->validator)->withInput();

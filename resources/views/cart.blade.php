@@ -60,26 +60,24 @@
                                             <span class="amount">JD{{ number_format($item->product->price, 2) }}</span>
                                         </td>
                                         <td class="product-quantity text-center">
-                                            <div class="product-quantity mt-10 mb-10">
-                                                <div class="product-quantity-form">
-                                                    <form action="{{ route('cart.update', $item->id) }}" method="POST" class="quantity-form">
-                                                        @csrf
-                                                        @method('PUT')
-                                                        <div class="input-group" style="max-width: 140px;">
-                                                            <button type="button" class="btn btn-outline-secondary cart-minus">
-                                                                <i class="fa-solid fa-minus"></i>
-                                                            </button>
-                                                            <input class="form-control text-center cart-input" 
-                                                                   type="number" 
-                                                                   name="quantity" 
-                                                                   value="{{ $item->quantity }}" 
-                                                                   min="1">
-                                                            <button type="button" class="btn btn-outline-secondary cart-plus">
-                                                                <i class="fa-solid fa-plus"></i>
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div>
+                                            <div class="product-quantity-form">
+                                                <form class="quantity-form" action="{{ route('cart.update', $item->id) }}" method="POST" data-item-id="{{ $item->id }}">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="input-group" style="max-width: 140px;">
+                                                        <button type="button" class="btn btn-outline-secondary cart-minus">
+                                                            <i class="fa-solid fa-minus"></i>
+                                                        </button>
+                                                        <input class="form-control text-center cart-input" 
+                                                               type="number" 
+                                                               name="quantity" 
+                                                               value="{{ $item->quantity }}" 
+                                                               min="1">
+                                                        <button type="button" class="btn btn-outline-secondary cart-plus">
+                                                            <i class="fa-solid fa-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </td>
                                         <td class="product-subtotal">
@@ -158,60 +156,88 @@
 
 @section('scripts')
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Quantity adjustment functionality
-    const minusButtons = document.querySelectorAll('.cart-minus');
-    const plusButtons = document.querySelectorAll('.cart-plus');
-    const quantityInputs = document.querySelectorAll('.cart-input');
-
-    function updateCartItem(form) {
-        fetch(form.action, {
-            method: 'POST',
+document.addEventListener("DOMContentLoaded", function() {
+    function updateQuantity(form, newQuantity) {
+        const itemId = form.dataset.itemId;
+        const url = form.action;
+        const row = form.closest('tr');
+        
+        const buttons = form.querySelectorAll('button');
+        const input = form.querySelector('.cart-input');
+        buttons.forEach(btn => btn.disabled = true);
+        input.disabled = true;
+        
+        fetch(url, {
+            method: 'PUT',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 'X-HTTP-Method-Override': 'PUT'
             },
-            body: new URLSearchParams(new FormData(form))
+            body: JSON.stringify({
+                quantity: newQuantity
+            })
         })
         .then(response => {
-            if (response.ok) {
-                window.location.reload(); // Refresh to see updated totals
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const priceText = row.querySelector('.product-price .amount').textContent;
+                const price = parseFloat(priceText.replace(/[^\d.]/g, ''));
+                const newSubtotal = price * newQuantity;
+                row.querySelector('.product-subtotal .amount').textContent = 'JD' + newSubtotal.toFixed(2);
+                
+                alert('تم تحديث الكمية بنجاح');
             } else {
-                console.error('Update failed');
+                throw new Error(data.message || 'Unknown error');
             }
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء التحديث: ' + error.message);
+            window.location.reload();
+        })
+        .finally(() => {
+            buttons.forEach(btn => btn.disabled = false);
+            input.disabled = false;
+        });
     }
 
-    minusButtons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const form = btn.closest('.quantity-form');
+    document.querySelectorAll('.cart-minus').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = this.closest('.quantity-form');
             const input = form.querySelector('.cart-input');
             let value = parseInt(input.value);
             if (value > 1) {
                 input.value = value - 1;
-                updateCartItem(form);
+                updateQuantity(form, input.value);
             }
         });
     });
 
-    plusButtons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const form = btn.closest('.quantity-form');
+    document.querySelectorAll('.cart-plus').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = this.closest('.quantity-form');
             const input = form.querySelector('.cart-input');
             let value = parseInt(input.value);
             input.value = value + 1;
-            updateCartItem(form);
+            updateQuantity(form, input.value);
         });
     });
 
-    quantityInputs.forEach(function (input) {
-        input.addEventListener('change', function () {
-            const form = input.closest('.quantity-form');
-            if (parseInt(input.value) >= 1) {
-                updateCartItem(form);
+    document.querySelectorAll('.cart-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const form = this.closest('.quantity-form');
+            let value = parseInt(this.value);
+            if (isNaN(value) || value < 1) {
+                this.value = 1;
+                value = 1;
             }
+            updateQuantity(form, value);
         });
     });
 });

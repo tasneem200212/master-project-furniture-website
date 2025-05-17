@@ -75,14 +75,6 @@ class ProductController extends Controller
         if ($request->filled('price')) {
             $this->applyPriceFilter($query, $request->price);
         }
-    
-        if ($request->filled('category') && $request->category == 'new') {
-            $query->where('created_at', '>=', now()->subDays(7));
-        }
-    
-        if ($request->filled('category') && $request->category == 'top') {
-            $query->orderByDesc('averageRating');
-        }
     }
     
     protected function applyPriceFilter($query, $priceRange)
@@ -249,7 +241,7 @@ class ProductController extends Controller
         $search = $request->input('query', '');
 
         if (!empty($search)) {
-            $query->where('name', 'like', "%{$search}%");
+            $query->where('name', 'like', "{$search}%");
         }
         
 

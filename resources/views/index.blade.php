@@ -4,6 +4,45 @@
  
 @section('content')
 <main>
+    @if(session('order_success'))
+    <div class="order-success-notification" style="position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 350px; width: 90%;">
+        <div style="background-color: #f8f9fa; border-left: 4px solid #4CAF50; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; align-items: center; animation: slideInRight 0.5s ease-out forwards;">
+            <i class="fas fa-check-circle" style="color: #4CAF50; font-size: 1.5rem; margin-right: 15px; flex-shrink: 0;"></i>
+            <div>
+                <h4 style="color: #4CAF50; margin: 0 0 5px 0; font-size: 1.1rem;">Order Confirmed!</h4>
+                <p style="color: #5a4a3a; margin: 0; font-size: 0.9rem;">{{ session('order_success') }}</p>
+            </div>
+            <button onclick="this.parentElement.remove()" style="margin-left: 15px; background: none; border: none; color: #6c757d; cursor: pointer; font-size: 1.2rem;">
+                &times;
+            </button>
+        </div>
+    </div>
+
+    <style>
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            to { opacity: 0; }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const notification = document.querySelector('.order-success-notification > div');
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                if (notification) {
+                    notification.style.animation = 'fadeOut 0.5s ease-out forwards';
+                    setTimeout(() => notification.remove(), 500);
+                }
+            }, 5000);
+        });
+    </script>
+    @endif
    <style>
 
 .furniture-testimonial__item {

@@ -48,35 +48,38 @@ class CartController extends Controller
 
     public function update(Request $request, $id)
     {
-        $cartItem = Cart::findOrFail($id);
+        $request->validate([
+            'quantity' => 'required|integer|min:1|max:100'
+        ]);
     
+        $cartItem = Cart::findOrFail($id);
         $cartItem->quantity = $request->input('quantity');
         $cartItem->save();
     
         $cartItems = Cart::where('user_id', auth()->id())->with('product')->get();
-        $subtotal = $cartItems->sum(function ($item) {
-            return $item->product->price * $item->quantity;
-        });
+    
+        $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
     
         $discountAmount = 0;
         $coupon = session('coupon');
-
     
         if ($coupon && !$cartItems->isEmpty() && $coupon->expiry_date >= now()) {
             $discountAmount = ($subtotal * $coupon->discount_percentage) / 100;
         }
-        
     
         $total = $subtotal - $discountAmount;
     
         return response()->json([
             'success' => true,
-            'subtotal' => number_format($subtotal, 2),
-            'discountAmount' => number_format($discountAmount, 2),
-            'total' => number_format($total, 2),
+            'cart_totals' => [
+                'subtotal' => $subtotal,
+                'discount' => $discountAmount,
+                'total' => $total,
+            ],
             'quantity' => $cartItem->quantity,
         ]);
     }
+    
     
     
 
@@ -107,7 +110,7 @@ class CartController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Product added to cart.');
+        return redirect()->back()->with('cart_success', 'Item added to cart successfully!');
     }
 
     public function destroy($id)
